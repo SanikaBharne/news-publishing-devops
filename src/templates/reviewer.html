@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reviewer Dashboard</title>
+    <style>
+        body { font-family: sans-serif; max-width: 800px; margin: 40px auto; padding: 20px; }
+        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+        th, td { padding: 10px; border: 1px solid #ccc; text-align: left; }
+        th { background-color: #f4f4f4; }
+        button { padding: 5px 10px; margin: 2px; cursor: pointer; border: none; border-radius: 4px; }
+        .btn-approve { background-color: #28a745; color: white; }
+        .btn-reject { background-color: #dc3545; color: white; }
+        .btn-view { background-color: #17a2b8; color: white; }
+        #message { margin-top: 20px; padding: 10px; display: none; border-radius: 4px; }
+        .success { background-color: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
+        .error { background-color: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
+        #article-modal { display: none; margin-top: 20px; padding: 20px; border: 1px solid #ccc; border-radius: 4px; background: #fafafa; }
+        .comment-box { width: 100%; margin-top: 10px; padding: 5px; box-sizing: border-box; }
+    </style>
+</head>
+<body>
+    <h1>Reviewer Dashboard</h1>
+    <a href="/">Back to Submission</a>
+    
+    <div id="message"></div>
+
+    <table id="articles-table">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Title</th>
+                <th>Author</th>
+                <th>Date</th>
+                <th>Status</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            <!-- Articles will be loaded here -->
+        </tbody>
+    </table>
+
+    <div id="article-modal">
+        <h2 id="modal-title"></h2>
+        <p><strong>Author:</strong> <span id="modal-author"></span></p>
+        <p><strong>Date:</strong> <span id="modal-date"></span></p>
+        <p><strong>Status:</strong> <span id="modal-status"></span></p>
+        <div id="modal-content" style="white-space: pre-wrap; background: #fff; padding: 10px; border: 1px solid #ddd;"></div>
+        
+        <div id="modal-actions" style="margin-top: 15px;">
+            <button class="btn-approve" onclick="approveArticle()">Approve</button>
+            <div style="margin-top: 10px;">
+                <input type="text" id="reject-comment" class="comment-box" placeholder="Rejection comment (mandatory for rejection)">
+                <button class="btn-reject" style="margin-top: 5px;" onclick="rejectArticle()">Reject</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentArticleId = null;
+
+        async function loadArticles() {
+            try {
+                const response = await fetch('/api/articles');
+                const articles = await response.json();
+                const tbody = document.querySelector('#articles-table tbody');
+                tbody.innerHTML = '';
+                
+                articles.forEach(article => {
+                    const tr = document.createElement('tr');
+                    tr.innerHTML = `
+                        <td>${article.id}</td>
+                        <td>${article.title}</td>
+                        <td>${article.author}</td>
+                        <td>${article.submission_date}</td>
+                        <td><strong>${article.status}</strong></td>
+                        <td>
+                            <button class="btn-view" onclick="viewArticle(${article.id})">View / Review</button>
+                        </td>
+                    `;
+                    tbody.appendChild(tr);
+                });
+            } catch (err) {
+                showMessage('error', 'Failed to load articles: ' + err.message);
+            }
+        }
+
+        async function viewArticle(id) {
+            try {
+                const response = await fetch(`/api/articles/${id}`);
+                const article = await response.json();
+                if (!response.ok) throw new Error(article.error);
+
+                currentArticleId = article.id;
+                document.getElementById('modal-title').textContent = article.title;
+                document.getElementById('modal-author').textContent = article.author;
+                document.getElementById('modal-date').textContent = article.submission_date;
+                document.getElementById('modal-status').textContent = article.status;
+                document.getElementById('modal-content').textContent = article.content;
+                document.getElementById('reject-comment').value = article.comment || '';
+                
+                document.getElementById('article-modal').style.display = 'block';
+                
+                if (article.status !== 'SUBMITTED') {
+                    document.getElementById('modal-actions').style.display = 'none';
+                } else {
+                    document.getElementById('modal-actions').style.display = 'block';
+                }
+            } catch (err) {
+                showMessage('error', 'Failed to load article: ' + err.message);
+            }
+        }
+
+        async function approveArticle() {
+            if (!currentArticleId) return;
+            try {
+                const response = await fetch(`/api/articles/${currentArticleId}/approve`, {
+                    method: 'PUT'
+                });
+                const data = await response.json();
+                if (response.ok) {
+                    showMessage('success', 'Article approved successfully.');
+                    document.getElementById('article-modal').style.display = 'none';
+                    loadArticles();
+                } else {
+                    showMessage('error', 'Error: ' + data.error);
+                }
+            } catch (err) {
+                showMessage('error', 'Request failed: ' + err.message);
+            }
+        }
+
+        async function rejectArticle() {
+            if (!currentArticleId) return;
+            const comment = document.getElementById('reject-comment').value;
+            try {
+                const response = await fetch(`/api/articles/${currentArticleId}/reject`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ comment })
+                });
+                const data = await response.json();
+                if (response.ok) {
+                    showMessage('success', 'Article rejected successfully.');
+                    document.getElementById('article-modal').style.display = 'none';
+                    loadArticles();
+                } else {
+                    showMessage('error', 'Error: ' + data.error);
+                }
+            } catch (err) {
+                showMessage('error', 'Request failed: ' + err.message);
+            }
+        }
+
+        function showMessage(type, text) {
+            const msgBox = document.getElementById('message');
+            msgBox.style.display = 'block';
+            msgBox.className = type;
+            msgBox.textContent = text;
+            setTimeout(() => msgBox.style.display = 'none', 5000);
+        }
+
+        window.onload = loadArticles;
+    </script>
+</body>
+</html>
