@@ -1,49 +1,127 @@
-# API Testing Details
+# API Testing
 
-Manual testing of the API ensures that it behaves correctly under different conditions. (Automated testing is covered in unit-testing.md).
+## Overview
 
-## Test Cases Executed Locally
+The `POST /api/articles` endpoint was tested to verify correct behavior for both valid and invalid inputs. Testing was performed using the Flask test client through pytest (see `unit-testing.md` for automated test details). The scenarios below document the expected and actual behavior.
 
-### 1. Valid Submission
-**Request:**
+## Test 1: Valid Submission
+
+**Input:**
 ```json
 {
-  "title": "Breaking News",
-  "content": "This is the content of the news.",
-  "author": "Jane Doe"
-}
-```
-**Response (201 Created):**
-```json
-{
-  "id": 1,
-  "message": "Article submitted successfully",
-  "status": "SUBMITTED"
+    "title": "Test Title",
+    "content": "Test Content",
+    "author": "Test Author"
 }
 ```
 
-### 2. Missing Fields
-**Request:**
+**Expected:** HTTP `201 Created`, response contains `id`, `message`, and `status: "SUBMITTED"`.
+
+**Actual:** HTTP `201 Created`. Response:
 ```json
 {
-  "title": "Breaking News",
-  "author": "Jane Doe"
-}
-```
-**Response (400 Bad Request):**
-```json
-{
-  "error": "Title, content, and author are required fields and cannot be empty."
+    "message": "Article submitted successfully",
+    "id": 1,
+    "status": "SUBMITTED"
 }
 ```
 
-### 3. Whitespace-Only Submission
-**Request:**
+**Result:** ✅ PASS
+
+## Test 2: Missing Title
+
+**Input:**
 ```json
 {
-  "title": "   ",
-  "content": "Content here",
-  "author": "Jane Doe"
+    "content": "Test Content",
+    "author": "Test Author"
 }
 ```
-**Response (400 Bad Request):** Validation catches the stripped title and rejects the payload.
+
+**Expected:** HTTP `400 Bad Request` with error message containing "required fields".
+
+**Actual:** HTTP `400 Bad Request`. Response:
+```json
+{
+    "error": "Title, content, and author are required fields and cannot be empty."
+}
+```
+
+**Result:** ✅ PASS
+
+## Test 3: Missing Content
+
+**Input:**
+```json
+{
+    "title": "Test Title",
+    "author": "Test Author"
+}
+```
+
+**Expected:** HTTP `400 Bad Request` with error message containing "required fields".
+
+**Actual:** HTTP `400 Bad Request` with the same validation error message.
+
+**Result:** ✅ PASS
+
+## Test 4: Missing Author
+
+**Input:**
+```json
+{
+    "title": "Test Title",
+    "content": "Test Content"
+}
+```
+
+**Expected:** HTTP `400 Bad Request` with error message containing "required fields".
+
+**Actual:** HTTP `400 Bad Request` with the same validation error message.
+
+**Result:** ✅ PASS
+
+## Test 5: Whitespace-Only Values
+
+**Input:**
+```json
+{
+    "title": "   ",
+    "content": "Test Content",
+    "author": "Test Author"
+}
+```
+
+**Expected:** HTTP `400 Bad Request`. The `.strip()` call reduces `"   "` to `""`, which fails the `if not title` check.
+
+**Actual:** HTTP `400 Bad Request` with the same validation error message.
+
+**Result:** ✅ PASS
+
+## Test 6: SUBMITTED Status After Successful Submission
+
+**Input:**
+```json
+{
+    "title": "Persistent Title",
+    "content": "Persistent Content",
+    "author": "Persistent Author"
+}
+```
+
+**Expected:** The article is saved to SQLite with `status = "SUBMITTED"`.
+
+**Actual:** Direct SQLite query on `test_app.db` confirmed the record exists with `title = "Persistent Title"` and `status = "SUBMITTED"`.
+
+**Result:** ✅ PASS
+
+## Summary
+
+| Test Case | HTTP Status | Result |
+|---|---|---|
+| Valid submission | 201 | ✅ PASS |
+| Missing title | 400 | ✅ PASS |
+| Missing content | 400 | ✅ PASS |
+| Missing author | 400 | ✅ PASS |
+| Whitespace-only fields | 400 | ✅ PASS |
+| Database persistence & SUBMITTED status | 201 | ✅ PASS |

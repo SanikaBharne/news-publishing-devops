@@ -1,16 +1,34 @@
 # Commit Details
 
 ## Commit Strategy
-The implementation of the Article Submission feature was committed to the isolated feature branch (`feature/article-submission`) using the conventional commit format defined in Week 4.
 
-## Core Commit
-*   **Message:** `feat: add article submission and validation`
-*   **Files Modified:**
-    *   `src/app.py`: Added SQLite setup and `/api/articles` POST endpoint.
-    *   `src/templates/index.html`: Created frontend form for submissions.
-    *   `tests/test_submission.py`: Added pytest unit tests for validation and persistence.
+The Article Submission feature was committed to the isolated `feature/article-submission` branch using the conventional commit format defined in Week 4. Code changes and documentation changes were separated into distinct commits.
 
-## Documentation Commit
-A subsequent commit captures the documentation for Week 5.
-*   **Message:** `docs: add week 5 feature documentation`
-*   **Files Modified:** `docs/week-05/*` and `docs/evidence/week-05/*`.
+## Commits on `feature/article-submission`
+
+### Commit 1: Feature Code
+
+| Field | Value |
+|---|---|
+| **Hash** | `b59d710` |
+| **Message** | `feat: add article submission and validation` |
+| **Purpose** | Implement the article submission API endpoint, frontend form, and automated tests. |
+| **Files** | `src/app.py` (modified), `src/templates/index.html` (new), `tests/test_submission.py` (new) |
+
+### Commit 2: Documentation
+
+| Field | Value |
+|---|---|
+| **Hash** | `a9ce133` |
+| **Message** | `docs: add week 5 feature documentation` |
+| **Purpose** | Add Week 5 documentation covering the feature, validation, testing, and Git workflow. |
+| **Files** | `docs/week-05/*` (11 new files), `docs/evidence/week-05/evidence-checklist.md` (new) |
+
+## Merge Commit
+
+| Field | Value |
+|---|---|
+| **Hash** | `c997ee6` |
+| **Message** | `Merge pull request #2 from feature/article-submission` |
+| **Purpose** | Merge the completed feature branch into `development` using `--no-ff` to preserve branch history. |
+| **Note** | This merge was performed locally. A GitHub Pull Request has not yet been created (see `pull-request.md`). |

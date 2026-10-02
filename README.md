@@ -74,6 +74,19 @@ Status: Completed
 - Pull Request workflow
 - [Week 4 documentation links](docs/week-04/week-04-summary.md)
 
+## Week 5 – Article Submission with Required-Field Validation
+
+Status: Completed
+
+- Implemented `POST /api/articles` endpoint with server-side validation
+- Created HTML frontend submission form
+- Required-field validation (title, content, author)
+- Whitespace-only rejection via `.strip()`
+- SQLite persistence with status `SUBMITTED`
+- 6 pytest unit tests (all passing)
+- Git workflow: `feature/article-submission` → `development`
+- [Week 5 documentation](docs/week-05/week-05-summary.md)
+
 ## 8. How to Run Locally
 1. Ensure Python 3.x is installed.
 2. Install dependencies:
@@ -87,10 +100,9 @@ Status: Completed
 4. Verify the health endpoint at `http://127.0.0.1:5000/health`.
 
 ## 9. How to Run Tests
-*(Planned for Future Weeks)*
-Once tests are implemented in Week 5-6, run them using:
+Run the pytest test suite:
 ```bash
-pytest
+python -m pytest -v
 ```
 
 ## 10. Git Branching Strategy
@@ -103,7 +115,8 @@ Features are merged into `development` via Pull Requests.
 ## 11. 15-Week Roadmap
 - **Week 1-3:** Problem Definition, Agile Planning, Architecture Setup ✅
 - **Week 4:** Git and GitHub Repository Initialization ✅
-- **Week 5-6:** Feature Development and MVP Completion ⏳
+- **Week 5:** Article Submission with Validation ✅
+- **Week 6:** MVP Completion (Dashboard, Approval, Rejection, Status Tracking) ⏳
 - **Week 7-8:** Jenkins CI and Pipeline as Code ⏳
 - **Week 9-10:** Selenium Tests and Continuous Testing ⏳
 - **Week 11:** Docker Image and Container Lifecycle ⏳
@@ -116,6 +129,7 @@ Features are merged into `development` via Pull Requests.
 - [Week 2: Agile Planning & DevOps Workflow](docs/week-02/week-02-summary.md)
 - [Week 3: Requirements, Architecture & Tech Stack](docs/week-03/week-03-summary.md)
 - [Week 4: Git/GitHub Setup & Branching Strategy](docs/week-04/branching-strategy.md)
+- [Week 5: Article Submission Feature](docs/week-05/week-05-summary.md)
 - [Evidence Checklists](docs/evidence/)
 
 ## 13. Future DevOps Components
