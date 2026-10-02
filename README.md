@@ -59,10 +59,20 @@ project-root/
 ```
 
 ## 7. Current Project Status
-**Week 4 - Git/GitHub Initialization and Repository Setup** is currently completed.
-- Git repository initialized.
-- Branching strategy and commit convention defined.
-- Project structure established.
+
+## Week 4 – Git/GitHub Initialization
+
+Status: Completed
+
+- Git repository setup
+- GitHub repository
+- repository structure
+- .gitignore
+- branching strategy
+- commit convention
+- GitHub issues
+- Pull Request workflow
+- [Week 4 documentation links](docs/week-04/week-04-summary.md)
 
 ## 8. How to Run Locally
 1. Ensure Python 3.x is installed.
