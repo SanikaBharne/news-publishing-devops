@@ -48,6 +48,10 @@ def health_check():
 def index():
     return render_template('index.html')
 
+@app.route('/reviewer', methods=['GET'])
+def reviewer():
+    return render_template('reviewer.html')
+
 @app.route('/api/articles', methods=['POST'])
 def submit_article():
     data = request.get_json()
@@ -79,6 +83,70 @@ def submit_article():
         "id": article_id,
         "status": status
     }), 201
+
+@app.route('/api/articles', methods=['GET'])
+def get_articles():
+    db = get_db()
+    cursor = db.cursor()
+    cursor.execute('SELECT * FROM articles ORDER BY id DESC')
+    articles = [dict(row) for row in cursor.fetchall()]
+    return jsonify(articles), 200
+
+@app.route('/api/articles/<int:id>', methods=['GET'])
+def get_article(id):
+    db = get_db()
+    cursor = db.cursor()
+    cursor.execute('SELECT * FROM articles WHERE id = ?', (id,))
+    row = cursor.fetchone()
+    if not row:
+        return jsonify({"error": "Article not found"}), 404
+    return jsonify(dict(row)), 200
+
+@app.route('/api/articles/<int:id>/approve', methods=['PUT'])
+def approve_article(id):
+    db = get_db()
+    cursor = db.cursor()
+    cursor.execute('SELECT * FROM articles WHERE id = ?', (id,))
+    row = cursor.fetchone()
+    if not row:
+        return jsonify({"error": "Article not found"}), 404
+    
+    if row['status'] != 'SUBMITTED':
+        return jsonify({"error": "Only SUBMITTED articles can be approved"}), 400
+
+    review_date = datetime.utcnow().strftime('%Y-%m-%d %H:%M:%S')
+    cursor.execute('''
+        UPDATE articles SET status = 'APPROVED', review_date = ? WHERE id = ?
+    ''', (review_date, id))
+    db.commit()
+
+    return jsonify({"message": "Article approved successfully", "id": id, "status": "APPROVED"}), 200
+
+@app.route('/api/articles/<int:id>/reject', methods=['PUT'])
+def reject_article(id):
+    data = request.get_json(silent=True) or {}
+
+    comment = data.get('comment', '').strip() if isinstance(data, dict) else ''
+    if not comment:
+        return jsonify({"error": "Rejection comment is mandatory and cannot be empty."}), 400
+
+    db = get_db()
+    cursor = db.cursor()
+    cursor.execute('SELECT * FROM articles WHERE id = ?', (id,))
+    row = cursor.fetchone()
+    if not row:
+        return jsonify({"error": "Article not found"}), 404
+    
+    if row['status'] != 'SUBMITTED':
+        return jsonify({"error": "Only SUBMITTED articles can be rejected"}), 400
+
+    review_date = datetime.utcnow().strftime('%Y-%m-%d %H:%M:%S')
+    cursor.execute('''
+        UPDATE articles SET status = 'REJECTED', comment = ?, review_date = ? WHERE id = ?
+    ''', (comment, review_date, id))
+    db.commit()
+
+    return jsonify({"message": "Article rejected successfully", "id": id, "status": "REJECTED"}), 200
 
 if __name__ == '__main__':
     init_db()
