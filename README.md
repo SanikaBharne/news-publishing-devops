@@ -59,10 +59,56 @@ project-root/
 ```
 
 ## 7. Current Project Status
-**Week 4 - Git/GitHub Initialization and Repository Setup** is currently completed.
-- Git repository initialized.
-- Branching strategy and commit convention defined.
-- Project structure established.
+
+## Week 4 – Git/GitHub Initialization
+
+Status: Completed
+
+- Git repository setup
+- GitHub repository
+- repository structure
+- .gitignore
+- branching strategy
+- commit convention
+- GitHub issues
+- Pull Request workflow
+- [Week 4 documentation links](docs/week-04/week-04-summary.md)
+
+## Week 5 – Article Submission with Required-Field Validation
+
+Status: Completed
+
+- Implemented `POST /api/articles` endpoint with server-side validation
+- Created HTML frontend submission form
+- Required-field validation (title, content, author)
+- Whitespace-only rejection via `.strip()`
+- SQLite persistence with status `SUBMITTED`
+- 6 pytest unit tests (all passing)
+- Git workflow: `feature/article-submission` → `development`
+- [Week 5 documentation](docs/week-05/week-05-summary.md)
+
+## Week 6 – Reviewer Workflow, Approval/Rejection & MVP Completion
+
+Status: Completed
+
+- Created Reviewer Dashboard UI at `/reviewer` displaying submitted articles
+- Implemented `PUT /api/articles/<id>/approve` endpoint (transitions status to `APPROVED`)
+- Implemented `PUT /api/articles/<id>/reject` endpoint with mandatory rejection comment validation
+- Exposed article details and status via `GET /api/articles/<id>`
+- Added 8 unit tests in `tests/test_reviewer.py` (total 14/14 tests passing)
+- Git workflow: `feature/reviewer-workflow` → `development`
+- [Week 6 documentation](docs/week-06/week-06-summary.md)
+
+## Week 7 – Jenkins Continuous Integration
+
+Status: Completed
+
+- Installed and configured Jenkins server
+- Created declarative `Jenkinsfile` pipeline
+- Configured Jenkins job to pull from GitHub `development` branch
+- Automated Python virtual environment creation and dependency installation
+- Automated `pytest` execution verifying 14/14 tests pass
+- [Week 7 documentation](docs/week-07/week-07-summary.md)
 
 ## 8. How to Run Locally
 1. Ensure Python 3.x is installed.
@@ -77,10 +123,9 @@ project-root/
 4. Verify the health endpoint at `http://127.0.0.1:5000/health`.
 
 ## 9. How to Run Tests
-*(Planned for Future Weeks)*
-Once tests are implemented in Week 5-6, run them using:
+Run the pytest test suite:
 ```bash
-pytest
+python -m pytest -v
 ```
 
 ## 10. Git Branching Strategy
@@ -93,8 +138,10 @@ Features are merged into `development` via Pull Requests.
 ## 11. 15-Week Roadmap
 - **Week 1-3:** Problem Definition, Agile Planning, Architecture Setup ✅
 - **Week 4:** Git and GitHub Repository Initialization ✅
-- **Week 5-6:** Feature Development and MVP Completion ⏳
-- **Week 7-8:** Jenkins CI and Pipeline as Code ⏳
+- **Week 5:** Article Submission with Validation ✅
+- **Week 6:** MVP Completion (Dashboard, Approval, Rejection, Status Tracking) ✅
+- **Week 7:** Jenkins CI and Pipeline as Code ✅
+- **Week 8:** Advanced CI configurations ⏳
 - **Week 9-10:** Selenium Tests and Continuous Testing ⏳
 - **Week 11:** Docker Image and Container Lifecycle ⏳
 - **Week 12:** Jenkins-Docker Continuous Deployment ⏳
@@ -106,6 +153,9 @@ Features are merged into `development` via Pull Requests.
 - [Week 2: Agile Planning & DevOps Workflow](docs/week-02/week-02-summary.md)
 - [Week 3: Requirements, Architecture & Tech Stack](docs/week-03/week-03-summary.md)
 - [Week 4: Git/GitHub Setup & Branching Strategy](docs/week-04/branching-strategy.md)
+- [Week 5: Article Submission Feature](docs/week-05/week-05-summary.md)
+- [Week 6: Reviewer Workflow & MVP Completion](docs/week-06/week-06-summary.md)
+- [Week 7: Jenkins CI Pipeline](docs/week-07/week-07-summary.md)
 - [Evidence Checklists](docs/evidence/)
 
 ## 13. Future DevOps Components

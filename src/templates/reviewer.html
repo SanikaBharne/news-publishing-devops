@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reviewer Desk | Newsflow</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='newsflow.css') }}">
+</head>
+<body>
+    <header class="masthead">
+        <div class="masthead-inner">
+            <a class="brand" href="/" aria-label="Newsflow newsroom home">
+                <span class="brand-kicker">Editorial desk</span>
+                <span class="brand-name">Newsflow</span>
+                <span class="brand-deck">The newsroom desk - submit, review, and publish, in one place.</span>
+            </a>
+            <div class="masthead-meta"><span id="current-time">Today</span><br>Reviewer desk</div>
+        </div>
+        <nav class="nav-strip" aria-label="Newsflow sections">
+            <div class="nav-inner">
+                <a class="nav-link" href="/">Newsroom</a>
+                <a class="nav-link" href="/#queue">Queue</a>
+                <a class="nav-link" href="/#board">Board</a>
+                <a class="nav-link" href="/#live">Live</a>
+                <a class="nav-link active" href="/reviewer">Reviewer desk</a>
+            </div>
+        </nav>
+    </header>
+
+    <main class="page-shell">
+        <section class="hero-line" aria-labelledby="reviewer-heading">
+            <div>
+                <p class="eyebrow">Reviewer / Decision desk</p>
+                <h1 id="reviewer-heading">Reviewer<br>dashboard.</h1>
+                <p class="hero-copy">Read the incoming wire, inspect the full story, and make the editorial call. Every decision stays visible in the workflow.</p>
+            </div>
+            <p class="hero-note">Approval and rejection are available for stories marked <strong>On the wire</strong>.</p>
+        </section>
+
+        <div id="message" role="status" aria-live="polite"></div>
+
+        <section class="section" aria-labelledby="articles-heading">
+            <div class="section-heading">
+                <div><p class="section-kicker">01 / All articles</p><h2 id="articles-heading">The desk</h2></div>
+                <p>Latest submissions first.</p>
+            </div>
+            <div class="table-wrap">
+                <table id="articles-table">
+                    <thead>
+                        <tr><th>ID</th><th>Headline</th><th>Byline</th><th>Submitted</th><th>Status</th><th>Action</th></tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+        </section>
+    </main>
+
+    <div class="modal-backdrop" id="article-modal" role="dialog" aria-modal="true" aria-labelledby="modal-title">
+        <div class="modal">
+            <div class="modal-header">
+                <div><p class="section-kicker">Article review</p><h2 id="modal-title"></h2></div>
+                <button class="modal-close" id="close-modal" type="button" aria-label="Close article review">&times;</button>
+            </div>
+            <div class="article-meta"><strong>By <span id="modal-author"></span></strong><span id="modal-date"></span><span id="modal-status"></span></div>
+            <p class="modal-copy" id="modal-content"></p>
+            <div id="modal-actions" class="form-grid">
+                <div class="modal-actions">
+                    <button class="table-button btn-approve" type="button" onclick="approveArticle()">Clear for publishing</button>
+                </div>
+                <label class="field" for="reject-comment"><span class="field-label">Reason for rejection</span><textarea id="reject-comment" class="comment-box" placeholder="A mandatory editorial note" required></textarea></label>
+                <div><button class="table-button btn-reject" type="button" onclick="rejectArticle()">Spike article</button></div>
+            </div>
+        </div>
+    </div>
+
+    <footer class="site-footer"><div class="masthead-inner">Newsflow / News Publishing Workflow MVP</div></footer>
+    <script src="{{ url_for('static', filename='reviewer.js') }}"></script>
+</body>
+</html>

@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Newsflow | Newsroom Desk</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='newsflow.css') }}">
+</head>
+<body>
+    <header class="masthead">
+        <div class="masthead-inner">
+            <a class="brand" href="/#newsroom" aria-label="Newsflow newsroom home">
+                <span class="brand-kicker">Editorial desk</span>
+                <span class="brand-name">Newsflow</span>
+                <span class="brand-deck">The newsroom desk - submit, review, and publish, in one place.</span>
+            </a>
+            <div class="masthead-meta"><span id="current-time">Today</span><br>Local newsroom</div>
+        </div>
+        <nav class="nav-strip" aria-label="Newsflow sections">
+            <div class="nav-inner">
+                <a class="nav-link active" href="#newsroom" data-target="newsroom">Newsroom</a>
+                <a class="nav-link" href="#queue" data-target="queue">Queue</a>
+                <a class="nav-link" href="#board" data-target="board">Board</a>
+                <a class="nav-link" href="#live" data-target="live">Live</a>
+                <a class="nav-link" href="/reviewer">Reviewer desk</a>
+            </div>
+        </nav>
+    </header>
+
+    <main class="page-shell">
+        <section class="hero-line" aria-labelledby="page-title">
+            <div>
+                <p class="eyebrow">Newsroom / Daily desk</p>
+                <h1 id="page-title">Make the story<br>move forward.</h1>
+                <p class="hero-copy">A clear path from first draft to editorial decision. Send a story to the desk, keep an eye on its status, and give every article a considered next step.</p>
+            </div>
+            <p class="hero-note">The desk is open for submissions.<br><strong>Start with the story below.</strong></p>
+        </section>
+
+        <div id="message" role="status" aria-live="polite"></div>
+
+        <section class="section" id="newsroom" data-section aria-labelledby="submission-heading">
+            <div class="section-heading">
+                <div>
+                    <p class="section-kicker">01 / Send a story</p>
+                    <h2 id="submission-heading">Newsroom</h2>
+                </div>
+                <p>Required fields are marked by the form.</p>
+            </div>
+            <div class="editorial-grid">
+                <div class="paper-panel">
+                    <form id="submission-form" class="form-grid">
+                        <label class="field" for="title">
+                            <span class="field-label">Headline</span>
+                            <input type="text" id="title" name="title" placeholder="Council approves new metro line" required>
+                        </label>
+                        <label class="field" for="author">
+                            <span class="field-label">Byline</span>
+                            <input type="text" id="author" name="author" placeholder="Asha Rao" required>
+                        </label>
+                        <label class="field" for="content">
+                            <span class="field-label">Story</span>
+                            <textarea id="content" name="content" placeholder="The city council approved the new metro line..." required></textarea>
+                        </label>
+                        <div><button class="primary-button" type="submit">Send to desk</button></div>
+                    </form>
+                </div>
+                <aside class="paper-panel">
+                    <p class="section-kicker">Desk note</p>
+                    <h3>Every submission gets a status.</h3>
+                    <p class="hero-copy">Stories begin <strong>On the wire</strong>. A reviewer can clear them for publishing or spike them with a reason. Nothing disappears from the record.</p>
+                    <a class="secondary-button" href="#board" data-target="board">View the board</a>
+                </aside>
+            </div>
+        </section>
+
+        <section class="section" id="queue" data-section aria-labelledby="queue-heading" hidden>
+            <div class="section-heading">
+                <div>
+                    <p class="section-kicker">02 / Incoming work</p>
+                    <h2 id="queue-heading">Queue</h2>
+                </div>
+                <p id="queue-count">0 stories</p>
+            </div>
+            <div id="queue-list" class="article-list"></div>
+        </section>
+
+        <section class="section" id="board" data-section aria-labelledby="board-heading" hidden>
+            <div class="section-heading">
+                <div>
+                    <p class="section-kicker">03 / Status tracking</p>
+                    <h2 id="board-heading">Editorial board</h2>
+                </div>
+                <p>One view of every article.</p>
+            </div>
+            <div class="board-grid">
+                <section class="board-column submitted" aria-labelledby="submitted-column">
+                    <div class="column-header"><span class="column-label" id="submitted-column">On the wire</span><span class="column-count" id="submitted-count">0</span></div>
+                    <div class="board-items" id="submitted-items"></div>
+                </section>
+                <section class="board-column approved" aria-labelledby="approved-column">
+                    <div class="column-header"><span class="column-label" id="approved-column">Cleared</span><span class="column-count" id="approved-count">0</span></div>
+                    <div class="board-items" id="approved-items"></div>
+                </section>
+                <section class="board-column rejected" aria-labelledby="rejected-column">
+                    <div class="column-header"><span class="column-label" id="rejected-column">Spiked</span><span class="column-count" id="rejected-count">0</span></div>
+                    <div class="board-items" id="rejected-items"></div>
+                </section>
+            </div>
+        </section>
+
+        <section class="section" id="live" data-section aria-labelledby="live-heading" hidden>
+            <div class="section-heading">
+                <div>
+                    <p class="section-kicker">04 / Ready desk</p>
+                    <h2 id="live-heading">Live</h2>
+                </div>
+                <p>Approved stories, ready for the next publishing step.</p>
+            </div>
+            <div class="live-panel">
+                <div>
+                    <p class="section-kicker">Current MVP boundary</p>
+                    <h3>The desk stops at approval.</h3>
+                    <p>Newsflow records editorial decisions through <strong>Cleared</strong>. Publishing is intentionally outside this workflow, so this view never invents a PUBLISHED status.</p>
+                </div>
+                <div class="live-stat"><strong id="live-count">0</strong><span>stories cleared for publishing</span></div>
+                <div id="live-list" class="article-list"></div>
+            </div>
+        </section>
+    </main>
+
+    <div class="modal-backdrop" id="reject-modal" role="dialog" aria-modal="true" aria-labelledby="reject-heading">
+        <div class="modal">
+            <div class="modal-header">
+                <div><p class="section-kicker">Editorial decision</p><h2 id="reject-heading">Spike this story?</h2></div>
+                <button class="modal-close" id="close-reject" type="button" aria-label="Close rejection dialog">&times;</button>
+            </div>
+            <p class="hero-copy">A short reason is required and will remain attached to the article record.</p>
+            <form id="reject-form" class="form-grid">
+                <label class="field" for="reject-reason"><span class="field-label">Reason for rejection</span><textarea id="reject-reason" required></textarea></label>
+                <div class="modal-actions"><button class="secondary-button" id="cancel-reject" type="button">Cancel</button><button class="danger-button" type="submit">Spike article</button></div>
+            </form>
+        </div>
+    </div>
+
+    <footer class="site-footer"><div class="masthead-inner">Newsflow / News Publishing Workflow MVP</div></footer>
+    <script src="{{ url_for('static', filename='newsroom.js') }}"></script>
+</body>
+</html>
