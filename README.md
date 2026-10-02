@@ -87,6 +87,18 @@ Status: Completed
 - Git workflow: `feature/article-submission` → `development`
 - [Week 5 documentation](docs/week-05/week-05-summary.md)
 
+## Week 6 – Reviewer Workflow, Approval/Rejection & MVP Completion
+
+Status: Completed
+
+- Created Reviewer Dashboard UI at `/reviewer` displaying submitted articles
+- Implemented `PUT /api/articles/<id>/approve` endpoint (transitions status to `APPROVED`)
+- Implemented `PUT /api/articles/<id>/reject` endpoint with mandatory rejection comment validation
+- Exposed article details and status via `GET /api/articles/<id>`
+- Added 8 unit tests in `tests/test_reviewer.py` (total 14/14 tests passing)
+- Git workflow: `feature/reviewer-workflow` → `development`
+- [Week 6 documentation](docs/week-06/week-06-summary.md)
+
 ## 8. How to Run Locally
 1. Ensure Python 3.x is installed.
 2. Install dependencies:
@@ -116,7 +128,7 @@ Features are merged into `development` via Pull Requests.
 - **Week 1-3:** Problem Definition, Agile Planning, Architecture Setup ✅
 - **Week 4:** Git and GitHub Repository Initialization ✅
 - **Week 5:** Article Submission with Validation ✅
-- **Week 6:** MVP Completion (Dashboard, Approval, Rejection, Status Tracking) ⏳
+- **Week 6:** MVP Completion (Dashboard, Approval, Rejection, Status Tracking) ✅
 - **Week 7-8:** Jenkins CI and Pipeline as Code ⏳
 - **Week 9-10:** Selenium Tests and Continuous Testing ⏳
 - **Week 11:** Docker Image and Container Lifecycle ⏳
@@ -130,6 +142,7 @@ Features are merged into `development` via Pull Requests.
 - [Week 3: Requirements, Architecture & Tech Stack](docs/week-03/week-03-summary.md)
 - [Week 4: Git/GitHub Setup & Branching Strategy](docs/week-04/branching-strategy.md)
 - [Week 5: Article Submission Feature](docs/week-05/week-05-summary.md)
+- [Week 6: Reviewer Workflow & MVP Completion](docs/week-06/week-06-summary.md)
 - [Evidence Checklists](docs/evidence/)
 
 ## 13. Future DevOps Components
