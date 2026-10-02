@@ -2,9 +2,8 @@
 deploy.py - Week 8: Deploy the Flask application on port 5001.
 
 Gunicorn is the standard WSGI server for Flask in Linux/production environments.
-On Windows (where Jenkins may run), gunicorn is not supported (missing fcntl).
-This script uses 'waitress', the Windows-compatible production WSGI server,
-as the deployment target for the local CI/CD pipeline.
+On Windows, gunicorn is not supported, so this script uses Waitress,
+the Windows-compatible WSGI server.
 
 Usage:
     python scripts/deploy.py
@@ -28,10 +27,15 @@ if __name__ == "__main__":
 
     try:
         from waitress import serve
-        print(f"Starting News Publishing Workflow on {DEPLOY_HOST}:{DEPLOY_PORT} (waitress WSGI server)")
+
+        print(
+            f"Starting News Publishing Workflow on "
+            f"{DEPLOY_HOST}:{DEPLOY_PORT} (waitress WSGI server)"
+        )
         print(f"Health check: http://{DEPLOY_HOST}:{DEPLOY_PORT}/health")
         serve(app, host=DEPLOY_HOST, port=DEPLOY_PORT, threads=4)
+
     except ImportError:
-        # Fallback: Flask development server (not for production)
+        # Fallback: Flask development server
         print("waitress not available – falling back to Flask dev server")
         app.run(host=DEPLOY_HOST, port=DEPLOY_PORT)
