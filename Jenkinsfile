@@ -27,11 +27,11 @@ pipeline {
             }
         }
 
-        stage('Run Tests') {
+        stage('Run Unit Tests') {
             steps {
                 bat """
                     call %VENV_DIR%\\Scripts\\activate.bat
-                    python -m pytest -v
+                    python -m pytest tests\\test_submission.py tests\\test_reviewer.py -v
                 """
             }
         }
@@ -63,6 +63,24 @@ pipeline {
                 bat """
                     call %VENV_DIR%\\Scripts\\activate.bat
                     python scripts\\healthcheck.py %DEPLOY_HOST% %DEPLOY_PORT% 10
+                """
+            }
+        }
+
+        stage('Run Selenium Tests') {
+            steps {
+                bat """
+                    call %VENV_DIR%\\Scripts\\activate.bat
+                    python -m pytest tests\\selenium -v
+                """
+            }
+        }
+
+        stage('Final Verification') {
+            steps {
+                bat """
+                    call %VENV_DIR%\\Scripts\\activate.bat
+                    python scripts\healthcheck.py %DEPLOY_HOST% %DEPLOY_PORT% 3
                 """
             }
         }
