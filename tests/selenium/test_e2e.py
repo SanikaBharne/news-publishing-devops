@@ -100,7 +100,7 @@ class TestArticleSubmission:
     def test_submission_page_loads(self, driver, base_url):
         """Scenario 1: Open the article submission page."""
         driver.get(f"{base_url}/")
-        assert "Newsflow" in driver.title or "Newsroom" in driver.page_source
+        assert "Submit News Article" in driver.title
 
     def test_valid_article_submission(self, driver, base_url):
         """Scenarios 2-4: Enter valid fields, submit, verify success message."""

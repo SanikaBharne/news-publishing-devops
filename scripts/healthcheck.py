@@ -27,7 +27,11 @@ for attempt in range(1, RETRIES + 1):
         response = urllib.request.urlopen(url, timeout=5)
         body = response.read().decode("utf-8")
         data = json.loads(body)
-        if response.status == 200 and data.get("status") == "ok":
+        if (
+            response.status == 200
+            and data.get("status") == "ok"
+            and data.get("message") == "News Publishing Workflow MVP running"
+        ):
             print(f"[PASS] Health check passed (attempt {attempt}): {body}")
             sys.exit(0)
         else:

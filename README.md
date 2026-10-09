@@ -117,6 +117,12 @@ Status: In progress
 - Dockerfile, container lifecycle, health check, and SQLite volume instructions: [Week 11 documentation](docs/week-11/week-11-summary.md)
 - Docker engine verification is required before image and container evidence can be captured.
 
+## Week 12 – Jenkins-Docker Continuous Deployment
+
+Status: In progress
+
+- Jenkins builds and deploys the tested application image, checks container health, and runs Selenium against the Docker deployment: [Week 12 documentation](docs/week-12/week-12-summary.md)
+
 ## 8. How to Run Locally
 1. Ensure Python 3.x is installed.
 2. Install dependencies:

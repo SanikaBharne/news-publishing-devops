@@ -2,15 +2,17 @@
 conftest.py for Selenium tests.
 
 Provides a module-scoped Chrome WebDriver fixture that points at the
-locally deployed application on port 5001.
+application configured by APP_BASE_URL, or the local port 5001 default.
 The app must be running before these tests are executed.
 """
+import os
+
 import pytest
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 
 
-BASE_URL = "http://127.0.0.1:5001"
+BASE_URL = os.environ.get("APP_BASE_URL", "http://127.0.0.1:5001").rstrip("/")
 
 
 def pytest_configure(config):
