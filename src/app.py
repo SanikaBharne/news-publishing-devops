@@ -5,7 +5,7 @@ from flask import Flask, jsonify, request, render_template, g
 from datetime import datetime
 
 app = Flask(__name__)
-DATABASE = 'app.db'
+DATABASE = os.environ.get('DATABASE_PATH', 'app.db')
 
 def get_db():
     db = getattr(g, '_database', None)
