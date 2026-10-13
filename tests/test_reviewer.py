@@ -67,7 +67,7 @@ def test_reviewer_dashboard_listing(client):
 def test_reviewer_desk_shows_recorded_project_verification(client):
     response = client.get("/reviewer")
     assert response.status_code == 200
-    assert b"23 passed" in response.data
+    assert b"24 passed" in response.data
     assert b"9 passed" in response.data
     assert b"not a live Jenkins feed" in response.data
     assert b"Jenkins run for this redesign" in response.data

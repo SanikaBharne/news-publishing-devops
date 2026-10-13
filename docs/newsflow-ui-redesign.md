@@ -16,7 +16,7 @@ See [account setup](newsflow-accounts.md) for interactive local and Docker accou
 
 ## Verification record
 
-- `python -m pytest tests\test_submission.py tests\test_reviewer.py tests\test_auth_public.py -v` — **23 passed**, including Reviewer Desk results and missing-account guidance.
+- `python -m pytest tests\test_submission.py tests\test_reviewer.py tests\test_auth_public.py -v` — **24 passed**, including the end-to-end approval-to-public-feed regression test.
 - `python -m pytest tests\selenium -v` — **9 passed**, including the reader browse/bookmark flow, publisher submission, separate reviewer approval/rejection, and validation.
 - `docker build -t news-publishing-app:newsflow-redesign .` — **passed**. The rebuilt image was deployed to `news-publishing-container` on 2026-10-13 after saving a database-volume backup; `news-publishing-data` remained mounted and was not removed.
 - Live deployment verification — **passed**. The new container reported `healthy`, `/health` returned HTTP 200 with `status: ok`, and the Publisher login page displayed the missing-account setup instructions.

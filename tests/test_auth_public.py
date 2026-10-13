@@ -89,6 +89,39 @@ def test_reader_only_sees_approved_articles_and_private_routes_are_blocked(clien
     ).status_code == 403
 
 
+def test_reviewer_approval_publishes_article_to_reader_edition(client):
+    test_client, reader_id, publisher_id, _, _ = client
+    _set_identity(test_client, publisher_id)
+    submission = test_client.post(
+        "/api/articles",
+        json={"title": "Approved for readers", "content": "Full published story", "author": "Reporter"},
+        headers={"X-CSRF-Token": "csrf-test"},
+    )
+    assert submission.status_code == 201
+    article_id = submission.get_json()["id"]
+    assert test_client.get(f"/article/{article_id}").status_code == 404
+
+    with app.app_context():
+        db = app_module.get_db()
+        reviewer_id = db.execute(
+            "INSERT INTO users (username, password_hash, role, display_name) VALUES (?, ?, ?, ?)",
+            ("separate-reviewer", generate_password_hash("reviewer-pass"), "publisher", "Separate Reviewer"),
+        ).lastrowid
+        db.commit()
+
+    _set_identity(test_client, reviewer_id)
+    decision = test_client.put(
+        f"/api/articles/{article_id}/approve",
+        headers={"X-CSRF-Token": "csrf-test"},
+    )
+    assert decision.status_code == 200
+
+    _set_identity(test_client, reader_id)
+    assert test_client.get(f"/article/{article_id}").status_code == 200
+    public_titles = [article["title"] for article in test_client.get("/api/public/articles").get_json()]
+    assert "Approved for readers" in public_titles
+
+
 def test_public_search_and_category_filter_only_search_approved(client):
     test_client, _, _, _, _ = client
     assert len(test_client.get("/api/public/articles?q=Public&category=Local").get_json()) == 1

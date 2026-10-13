@@ -61,7 +61,7 @@ ARTICLE_COLUMNS = {
 PROJECT_VERIFICATION = (
     {
         "name": "Backend unit and authorization tests",
-        "result": "23 passed",
+        "result": "24 passed",
         "detail": "Submission, reviewer workflow, Reader/Publisher access, public visibility, and CSRF.",
         "status": "passed",
     },
