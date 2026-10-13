@@ -40,6 +40,12 @@ curl.exe --silent --show-error --max-time 8 --write-out "`nHTTP %{http_code}`n" 
 docker inspect news-publishing-container --format "{{.State.Status}} {{.State.Health.Status}} image={{.Image}} volumes={{range .Mounts}}{{.Name}}:{{.Destination}} {{end}}"
 # running healthy image=sha256:b075a703370120c3f7e3b77421c10ae3823fe0b9258314defaf18993f2632b7a volumes=news-publishing-data:/data
 
+docker inspect news-publishing-container --format "configured={{.Config.Image}} status={{.State.Status}} health={{.State.Health.Status}} imageId={{.Image}} ports={{json .NetworkSettings.Ports}} volume={{range .Mounts}}{{.Name}}:{{.Destination}}{{end}}"
+# configured=news-publishing-app:newsflow-redesign status=running health=healthy imageId=sha256:b075a703370120c3f7e3b77421c10ae3823fe0b9258314defaf18993f2632b7a ports={"5001/tcp":[{"HostIp":"0.0.0.0","HostPort":"5001"},{"HostIp":"::","HostPort":"5001"}]} volume=news-publishing-data:/data
+
+curl.exe --silent --show-error --max-time 8 --output NUL --write-out "HTTP %{http_code}`n" http://127.0.0.1:5001/
+# HTTP 200
+
 docker logs --tail 20 news-publishing-container
 # Recent health checks and homepage/static/API requests; no error visible in returned tail.
 ```
