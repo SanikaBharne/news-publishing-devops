@@ -52,7 +52,7 @@ pipeline {
                 bat """
                     call %VENV_DIR%\\Scripts\\activate.bat
                     if errorlevel 1 exit /b 1
-                    python -m pytest tests\\test_submission.py tests\\test_reviewer.py -v
+                    python -m pytest tests\\test_submission.py tests\\test_reviewer.py tests\\test_auth_public.py -v
                     if errorlevel 1 exit /b 1
                 """
             }

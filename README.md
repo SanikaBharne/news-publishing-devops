@@ -23,10 +23,10 @@ The Flask/SQLite MVP supports a public approved-story edition, Reader accounts a
 | Category | Selection | Status |
 |---|---|---|
 | Language | Python 3 | ✅ Installed |
-| Frontend | HTML/CSS/JS + Jinja2 | ⏳ Planned |
+| Frontend | HTML/CSS/JS + Jinja2 | ✅ Implemented |
 | Backend | Flask | ✅ Installed |
-| Database | SQLite | ⏳ Planned |
-| Testing | pytest + Selenium (Week 9) | ✅ pytest Installed |
+| Database | SQLite | ✅ Implemented |
+| Testing | pytest + Selenium | ✅ Implemented and locally verified |
 | Version Control | Git + GitHub | ✅ Initialized |
 
 ## 6. Project Structure
@@ -34,7 +34,7 @@ The Flask/SQLite MVP supports a public approved-story edition, Reader accounts a
 project-root/
 ├── src/                         # Application source code
 │   └── app.py
-├── tests/                       # Automated tests (Planned)
+├── tests/                       # pytest and Selenium tests
 ├── docs/                        # Project documentation
 │   ├── week-01/
 │   ├── week-02/
@@ -100,10 +100,19 @@ Status: Completed
 
 ## Week 11 – Docker Image and Container Lifecycle
 
-Status: In progress
+Status: Completed
 
 - Dockerfile, container lifecycle, health check, and SQLite volume instructions: [Week 11 documentation](docs/week-11/week-11-summary.md)
-- Docker engine verification is required before image and container evidence can be captured.
+- Named-volume deployment and health-check records are available in the [Week 12 documentation](docs/week-12/week-12-summary.md).
+
+## Weeks 12–14 – Deployment, Monitoring, and Readiness
+
+- [Week 12: Jenkins and Docker deployment](docs/week-12/week-12-summary.md) — historical pipeline and deployment results.
+- [Week 13: Deployment monitoring](docs/week-13/week-13-summary.md) — application, container, health, and evidence checks.
+- [Week 14: Release readiness](docs/week-14/release-readiness.md) — original validation snapshot and the current integration update.
+- [Current integration evidence](docs/evidence/week-14/current-redesign-verification.md) — latest local tests, deployed image identity, and authenticated Jenkins build/source verification.
+- [Reader and Publisher setup and workflow](docs/newsflow-accounts.md).
+- [NewsFlow UI and security notes](docs/newsflow-ui-redesign.md).
 
 ## 8. How to Run Locally
 1. Ensure Python 3.x is installed.
@@ -144,10 +153,11 @@ Features are merged into `development` via Pull Requests.
 - **Week 6:** MVP Completion (Dashboard, Approval, Rejection, Status Tracking) ✅
 - **Week 7:** Jenkins CI and Pipeline as Code ✅
 - **Week 8:** Advanced CI configurations ⏳
-- **Week 9-10:** Selenium Tests and Continuous Testing ⏳
-- **Week 11:** Docker Image and Container Lifecycle ⏳
-- **Week 12:** Jenkins-Docker Continuous Deployment ⏳
-- **Week 13-14:** Ansible Configuration and Automated Provisioning ⏳
+- **Week 9-10:** Selenium Tests and Continuous Testing ✅ (9 UI tests passed locally; redesign branch Jenkins run pending)
+- **Week 11:** Docker Image and Container Lifecycle ✅
+- **Week 12:** Jenkins-Docker Continuous Deployment ✅ (the latest verified Jenkins build used the Week 12 CD branch)
+- **Week 13:** Deployment monitoring and evidence documentation ✅
+- **Week 14:** Release-readiness documentation and NewsFlow integration on `feature/newsflow-ui-redesign` ✅; development merge, redesign Jenkins run, and screenshots remain pending
 - **Week 15:** Final End-to-End Release and Documentation ⏳
 
 ## 12. Documentation Links
@@ -158,12 +168,13 @@ Features are merged into `development` via Pull Requests.
 - [Week 5: Article Submission Feature](docs/week-05/week-05-summary.md)
 - [Week 6: Reviewer Workflow & MVP Completion](docs/week-06/week-06-summary.md)
 - [Week 7: Jenkins CI Pipeline](docs/week-07/week-07-summary.md)
+- [Week 12: Jenkins-Docker deployment](docs/week-12/week-12-summary.md)
+- [Week 13: Deployment monitoring](docs/week-13/week-13-summary.md)
+- [Week 14: Release readiness](docs/week-14/release-readiness.md)
+- [Week 14 evidence checklist](docs/week-14/evidence-checklist.md)
+- [NewsFlow Reader/Publisher account setup](docs/newsflow-accounts.md)
+- [NewsFlow redesign and verification](docs/newsflow-ui-redesign.md)
 - [Evidence Checklists](docs/evidence/)
 
 ## 13. Future DevOps Components
-The following are **NOT** currently implemented, but are planned for future weeks:
-- Jenkins server for Continuous Integration.
-- Docker containers for packaging the application.
-- Selenium WebDriver for UI automation testing.
-- Ansible playbooks for environment provisioning.
-- Gunicorn server for production deployment.
+Ansible/Puppet provisioning remains outside the implemented project scope. Jenkins, Docker packaging/deployment, Selenium testing, and the Gunicorn-based Docker runtime are already present; see the linked Week 12–14 records for the limits and verification status.
