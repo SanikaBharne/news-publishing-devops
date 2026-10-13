@@ -18,7 +18,7 @@ Integrate the existing Linux Docker image with the Windows Jenkins pipeline to a
 - Container health and `/health` returned the expected successful response.
 - Selenium: all eight existing end-to-end tests passed against the Docker deployment.
 - Article data persisted through container replacement using the named volume.
-- Jenkins itself was not executed. Its Windows `LocalSystem` service's Docker engine access must be verified on the Jenkins host.
+- The latest supplied Jenkins run failed before tests or Docker stages because Python was not available on the Jenkins service `PATH`; the remaining stages were skipped. Ensure Python is available on the system `PATH` for the Jenkins service account, restart Jenkins, and rerun. Docker engine access under the Windows `LocalSystem` service identity also remains unverified.
 - No screenshots have been captured; see the unchecked evidence checklist.
 
 Ansible, Kubernetes, cloud provisioning, and new application features remain out of scope.

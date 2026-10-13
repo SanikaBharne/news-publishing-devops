@@ -24,6 +24,16 @@ pipeline {
             }
         }
 
+        stage('Check Python') {
+            steps {
+                bat '''
+                    where.exe python
+                    python --version
+                    python -m pip --version
+                '''
+            }
+        }
+
         stage('Install Dependencies') {
             steps {
                 bat """
