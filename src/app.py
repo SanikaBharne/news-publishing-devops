@@ -58,6 +58,65 @@ ARTICLE_COLUMNS = {
     "cover_image": "TEXT NOT NULL DEFAULT ''",
     "user_id": "INTEGER",
 }
+PROJECT_VERIFICATION = (
+    {
+        "name": "Backend unit and authorization tests",
+        "result": "23 passed",
+        "detail": "Submission, reviewer workflow, Reader/Publisher access, public visibility, and CSRF.",
+        "status": "passed",
+    },
+    {
+        "name": "Selenium end-to-end tests",
+        "result": "9 passed",
+        "detail": "Publisher submission, review decisions, Reader browsing/bookmarks, and form validation.",
+        "status": "passed",
+    },
+    {
+        "name": "Docker candidate image",
+        "result": "Build passed",
+        "detail": "Built as news-publishing-app:newsflow-redesign; candidate build is not a Jenkins result.",
+        "status": "passed",
+    },
+    {
+        "name": "Deployed application health",
+        "result": "Healthy",
+        "detail": "Container health check and /health returned status ok after deployment.",
+        "status": "passed",
+    },
+    {
+        "name": "Jenkins run for this redesign",
+        "result": "Not verified",
+        "detail": "No authenticated Jenkins run result was available for this branch.",
+        "status": "pending",
+    },
+)
+PROJECT_MILESTONES = (
+    {
+        "name": "Article workflow",
+        "detail": "Submission validation, editorial approval/rejection, and persistent SQLite status.",
+        "status": "Complete",
+    },
+    {
+        "name": "CI and browser testing",
+        "detail": "Jenkins pipeline and Selenium test coverage documented; current Jenkins redesign run is unverified.",
+        "status": "Implemented",
+    },
+    {
+        "name": "Docker deployment",
+        "detail": "Docker image, persistent volume, deployment, and health-check workflow documented.",
+        "status": "Complete",
+    },
+    {
+        "name": "Weeks 13–14",
+        "detail": "Deployment monitoring and release-readiness documentation prepared.",
+        "status": "Documented",
+    },
+    {
+        "name": "NewsFlow Reader and Publisher UI",
+        "detail": "Separate role-based experiences, article workflow, and regression tests implemented.",
+        "status": "Complete",
+    },
+)
 
 
 def get_db():
@@ -296,9 +355,28 @@ def login_choice():
 def _login(role):
     username = request.form.get("username", "").strip()
     password = request.form.get("password", "")
+    account_exists = (
+        get_db().execute("SELECT 1 FROM users WHERE role = ? LIMIT 1", (role,)).fetchone()
+        is not None
+    )
+    if not account_exists:
+        return (
+            render_template(
+                "login.html",
+                role=role,
+                error=None,
+                account_configured=False,
+            ),
+            503,
+        )
     user = get_db().execute("SELECT * FROM users WHERE username = ?", (username,)).fetchone()
     if not user or user["role"] != role or not check_password_hash(user["password_hash"], password):
-        return render_template("login.html", role=role, error="The username or password was not recognized."), 401
+        return render_template(
+            "login.html",
+            role=role,
+            error="The username or password was not recognized.",
+            account_configured=True,
+        ), 401
     session.clear()
     session["user_id"] = user["id"]
     csrf_token()
@@ -317,14 +395,31 @@ def _login(role):
 def reader_login():
     if request.method == "POST":
         return _login("reader")
-    return render_template("login.html", role="reader", error=None)
+    return render_template(
+        "login.html",
+        role="reader",
+        error=None,
+        account_configured=_has_role_account("reader"),
+    )
 
 
 @app.route("/publisher/login", methods=["GET", "POST"])
 def publisher_login():
     if request.method == "POST":
         return _login("publisher")
-    return render_template("login.html", role="publisher", error=None)
+    return render_template(
+        "login.html",
+        role="publisher",
+        error=None,
+        account_configured=_has_role_account("publisher"),
+    )
+
+
+def _has_role_account(role):
+    return (
+        get_db().execute("SELECT 1 FROM users WHERE role = ? LIMIT 1", (role,)).fetchone()
+        is not None
+    )
 
 
 @app.route("/logout", methods=["POST"])
@@ -428,7 +523,11 @@ def article_preview(article_id):
 @app.route("/reviewer")
 @login_required("publisher")
 def reviewer():
-    return render_template("reviewer.html")
+    return render_template(
+        "reviewer.html",
+        verification_tests=PROJECT_VERIFICATION,
+        completed_work=PROJECT_MILESTONES,
+    )
 
 
 @app.route("/api/public/articles")

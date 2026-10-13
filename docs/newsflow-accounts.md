@@ -38,6 +38,8 @@ Each command prompts for and confirms a 12-character-minimum password. These com
 
 ## Workflow and access
 
+If a Reader or Publisher login page reports that no account is configured, sign-in is not broken: this database has no account of that role yet. From PowerShell, provision one interactively using the Docker commands above. Enter the username and password you selected; passwords are never included in the command. After successful account creation, reload the relevant sign-in page and use those credentials. The running deployment's account table was checked on 2026-10-13 and was empty.
+
 - The public homepage and `/api/public/articles` expose **APPROVED** articles only. `/article/<id>` and `/api/public/articles/<id>` return 404 for drafts, submissions, and rejected articles.
 - Readers can save only approved stories to their reading list.
 - Publishers create drafts or submit stories (`SUBMITTED`), then a different publisher account can approve (`APPROVED`) or reject (`REJECTED`) them. Rejection requires a non-whitespace comment; a publisher cannot review their own account-owned submission.

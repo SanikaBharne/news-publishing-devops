@@ -335,6 +335,22 @@ a:focus-visible, button:focus-visible, input:focus-visible, textarea:focus-visib
 .status-draft { color: #5e6570; background: #eceef0; }
 .empty-panel { padding: 32px; }
 .empty-panel p { color: var(--ink-soft); }
+.qa-section { padding-top: 38px; }
+.qa-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+.qa-card, .milestone-row { border: 1px solid var(--rule); background: var(--white); padding: 18px; }
+.qa-card-heading, .milestone-row { display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; }
+.qa-card h3, .milestone-row h3 { margin: 0; font: 700 .95rem "Segoe UI", Arial, sans-serif; letter-spacing: 0; }
+.qa-card p, .milestone-row p { margin: 12px 0 0; color: var(--ink-soft); font-size: .86rem; }
+.qa-status { flex: 0 0 auto; border: 1px solid currentColor; padding: 3px 8px; font-size: .68rem; font-weight: 700; letter-spacing: .04em; text-transform: uppercase; }
+.qa-status-passed, .qa-status-complete { color: #456343; background: #e2ebdf; }
+.qa-status-pending { color: #8c681c; background: #f8efcf; }
+.qa-subheading { margin: 30px 0 14px; }
+.qa-subheading h3 { margin-bottom: 0; font: 400 1.45rem Georgia, "Times New Roman", serif; }
+.milestone-list { display: grid; gap: 8px; }
+.milestone-row { align-items: center; }
+.account-setup-notice { display: grid; gap: 8px; }
+.account-setup-notice p { margin: 0; }
+.account-setup-notice code { overflow-wrap: anywhere; padding: 9px; color: var(--ink); background: var(--paper-2); font-size: .8rem; }
 .story-detail { max-width: 790px; margin: 0 auto; }
 .story-detail h1 { max-width: 790px; font-size: clamp(2.6rem, 7vw, 5.2rem); }
 .story-cover, .story-cover-placeholder { display: block; width: 100%; max-height: 480px; min-height: 240px; margin-bottom: 32px; object-fit: cover; background: var(--paper-2); }
@@ -365,7 +381,8 @@ a:focus-visible, button:focus-visible, input:focus-visible, textarea:focus-visib
     .hero-line, .editorial-grid, .live-panel { grid-template-columns: 1fr; gap: 26px; }
     .board-grid { grid-template-columns: 1fr; }
     h1 { font-size: clamp(2.7rem, 15vw, 4.5rem); }
-    .public-grid, .role-grid, .metric-grid, .feed-toolbar { grid-template-columns: 1fr; }
+    .public-grid, .role-grid, .metric-grid, .feed-toolbar, .qa-grid { grid-template-columns: 1fr; }
+    .qa-card-heading, .milestone-row { align-items: flex-start; flex-direction: column; }
     .featured-card { grid-template-columns: 1fr; }
     .featured-card .story-thumbnail, .featured-card .story-thumbnail-placeholder { min-height: 200px; }
     .reader-cta { align-items: start; flex-direction: column; }

@@ -21,6 +21,23 @@
     <main class="page-shell">
         <section class="hero-line"><div><p class="eyebrow">Publisher / Decision desk</p><h1>Review the<br>incoming wire.</h1><p class="hero-copy">Read each submission, inspect the full story, and record a clear editorial decision.</p></div><p class="hero-note">Approval and rejection are available for <strong>On the wire</strong> stories.</p></section>
         <div id="message" role="status" aria-live="polite"></div>
+        <section class="section qa-section" aria-labelledby="verification-heading">
+            <div class="section-heading"><div><p class="section-kicker">Project record</p><h2 id="verification-heading">Tests & milestones</h2></div><p>Previously recorded results; not a live Jenkins feed.</p></div>
+            <div class="qa-grid">
+                {% for item in verification_tests %}
+                <article class="qa-card">
+                    <div class="qa-card-heading"><h3>{{ item.name }}</h3><span class="qa-status qa-status-{{ item.status }}">{{ item.result }}</span></div>
+                    <p>{{ item.detail }}</p>
+                </article>
+                {% endfor %}
+            </div>
+            <div class="section-heading qa-subheading"><div><p class="section-kicker">Work completed so far</p><h3>Project milestones</h3></div></div>
+            <div class="milestone-list">
+                {% for item in completed_work %}
+                <article class="milestone-row"><div><h3>{{ item.name }}</h3><p>{{ item.detail }}</p></div><span class="qa-status qa-status-complete">{{ item.status }}</span></article>
+                {% endfor %}
+            </div>
+        </section>
         <section class="section" aria-labelledby="articles-heading">
             <div class="section-heading"><div><p class="section-kicker">Editorial decisions</p><h2 id="articles-heading">The desk</h2></div><p>Latest submissions first.</p></div>
             <div class="table-wrap"><table id="articles-table"><thead><tr><th>ID</th><th>Headline</th><th>Byline</th><th>Submitted</th><th>Status</th><th>Action</th></tr></thead><tbody></tbody></table></div>

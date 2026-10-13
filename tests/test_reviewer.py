@@ -64,6 +64,15 @@ def test_reviewer_dashboard_listing(client):
     assert len(articles) > 0
     assert any(a["id"] == article_id for a in articles)
 
+def test_reviewer_desk_shows_recorded_project_verification(client):
+    response = client.get("/reviewer")
+    assert response.status_code == 200
+    assert b"23 passed" in response.data
+    assert b"9 passed" in response.data
+    assert b"not a live Jenkins feed" in response.data
+    assert b"Jenkins run for this redesign" in response.data
+    assert b"Not verified" in response.data
+
 def test_approve_valid_submitted_article(client):
     article_id = submit_article(client)
     response = client.put(f'/api/articles/{article_id}/approve', headers={"X-CSRF-Token": "test-csrf-token"})

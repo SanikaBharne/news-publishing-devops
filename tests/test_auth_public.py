@@ -62,6 +62,18 @@ def test_login_uses_hashed_password_and_distinct_roles(client):
     assert test_client.get("/publisher").status_code == 403
 
 
+def test_login_explains_when_role_has_no_provisioned_account(client):
+    test_client, reader_id, _, _, _ = client
+    with app.app_context():
+        app_module.get_db().execute("DELETE FROM users WHERE id = ?", (reader_id,))
+        app_module.get_db().commit()
+
+    response = test_client.get("/reader/login")
+    assert response.status_code == 200
+    assert b"No reader account is set up yet." in response.data
+    assert b"src.manage_users --role reader" in response.data
+
+
 def test_reader_only_sees_approved_articles_and_private_routes_are_blocked(client):
     test_client, reader_id, _, approved_id, pending_id = client
     _set_identity(test_client, reader_id)
