@@ -1,0 +1,13 @@
+<!doctype html>
+<html lang="en">
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="csrf-token" content="{{ csrf_token() }}"><title>{{ 'Reader' if role == 'reader' else 'Publisher' }} sign in | NewsFlow</title><link rel="stylesheet" href="{{ url_for('static', filename='newsflow.css') }}"></head>
+<body><header class="masthead"><div class="masthead-inner"><a class="brand" href="/"><span class="brand-kicker">{{ 'Reader edition' if role == 'reader' else 'Editorial workspace' }}</span><span class="brand-name">NewsFlow</span><span class="brand-deck">The newsroom desk — submit, review, and read.</span></a><div class="masthead-meta">{{ 'Reader sign in' if role == 'reader' else 'Publisher sign in' }}</div></div></header>
+<main class="page-shell auth-shell"><p class="eyebrow">{{ '01 / Reader account' if role == 'reader' else '02 / Publisher account' }}</p><h1>{{ 'Welcome to the edition.' if role == 'reader' else 'Back to the desk.' }}</h1>
+<form class="paper-panel auth-form" method="post" novalidate><input type="hidden" name="_csrf_token" value="{{ csrf_token() }}">
+{% if error %}<div class="message error" role="alert">{{ error }}</div>{% endif %}
+<label class="field" for="username"><span class="field-label">Username</span><input id="username" name="username" autocomplete="username" required autofocus></label>
+<label class="field" for="password"><span class="field-label">Password</span><span class="password-control"><input id="password" name="password" type="password" autocomplete="current-password" required><button type="button" class="secondary-button" id="toggle-password" aria-pressed="false">Show</button></span></label>
+<button class="primary-button" type="submit">Sign in as {{ role }}</button><p class="auth-help">Demo accounts are configured by the project administrator. <a href="/login">Choose another desk</a>.</p>
+</form></main>
+<script>document.getElementById('toggle-password').addEventListener('click', function () { const input = document.getElementById('password'); const show = input.type === 'password'; input.type = show ? 'text' : 'password'; this.textContent = show ? 'Hide' : 'Show'; this.setAttribute('aria-pressed', String(show)); });</script>
+</body></html>

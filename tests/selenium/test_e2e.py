@@ -10,8 +10,7 @@ Run with:
     python -m pytest tests/selenium/ -v
 """
 
-import time
-import pytest
+import os
 from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.support.ui import WebDriverWait
@@ -44,23 +43,42 @@ def activate_button(button):
 def click_submission_button(driver):
     """Activate the form submit control without relying on viewport coordinates."""
     button = WebDriverWait(driver, 10).until(
-        EC.element_to_be_clickable((By.CSS_SELECTOR, "#submission-form button[type='submit']"))
+        EC.element_to_be_clickable((By.CSS_SELECTOR, "#submission-form button[name='action'][value='submit']"))
     )
     activate_button(button)
 
 
+def login_as(driver, base_url, role):
+    """Authenticate an isolated Selenium account for the requested desk."""
+    if role == "publisher":
+        driver.get(f"{base_url}/publisher/login")
+        username = os.environ["NEWSFLOW_TEST_PUBLISHER_USERNAME"]
+    elif role == "reviewer":
+        driver.get(f"{base_url}/publisher/login")
+        username = os.environ["NEWSFLOW_TEST_REVIEWER_USERNAME"]
+    elif role == "reader":
+        driver.get(f"{base_url}/reader/login")
+        username = os.environ["NEWSFLOW_TEST_READER_USERNAME"]
+    else:
+        raise ValueError(f"Unsupported test role: {role}")
+    wait_for_visible(driver, "#username")
+    driver.find_element(By.ID, "username").send_keys(username)
+    driver.find_element(By.ID, "password").send_keys(os.environ["NEWSFLOW_TEST_PASSWORD"])
+    driver.find_element(By.CSS_SELECTOR, "form button[type='submit']").click()
+    WebDriverWait(driver, 10).until(lambda browser: "/login" not in browser.current_url)
+
+
 def submit_article(driver, base_url, title, author, content):
     """Navigate to the submission page and submit an article."""
-    driver.get(f"{base_url}/")
+    login_as(driver, base_url, "publisher")
+    driver.get(f"{base_url}/publisher/articles/new")
     wait_for_visible(driver, "#title")
     driver.find_element(By.ID, "title").clear()
     driver.find_element(By.ID, "title").send_keys(title)
-    driver.find_element(By.ID, "author").clear()
-    driver.find_element(By.ID, "author").send_keys(author)
     driver.find_element(By.ID, "content").clear()
     driver.find_element(By.ID, "content").send_keys(content)
     click_submission_button(driver)
-    # Wait for the message box to appear
+    # Wait for the successful flash message after the form is saved.
     msg = wait_for_visible(driver, "#message")
     return msg
 
@@ -71,6 +89,7 @@ def open_article_in_reviewer(driver, base_url, title):
     click 'View / Review', and wait for the modal to open.
     Returns the modal element.
     """
+    login_as(driver, base_url, "reviewer")
     driver.get(f"{base_url}/reviewer")
     # Wait until at least one row with the article title is present
     WebDriverWait(driver, 10).until(
@@ -99,8 +118,9 @@ class TestArticleSubmission:
 
     def test_submission_page_loads(self, driver, base_url):
         """Scenario 1: Open the article submission page."""
-        driver.get(f"{base_url}/")
-        assert "Newsflow" in driver.title or "Newsroom" in driver.page_source
+        login_as(driver, base_url, "publisher")
+        driver.get(f"{base_url}/publisher/articles/new")
+        assert "NewsFlow" in driver.title and "Headline" in driver.page_source
 
     def test_valid_article_submission(self, driver, base_url):
         """Scenarios 2-4: Enter valid fields, submit, verify success message."""
@@ -122,6 +142,7 @@ class TestReviewerDashboard:
 
     def test_reviewer_dashboard_loads(self, driver, base_url):
         """Scenario 5: Open the reviewer dashboard."""
+        login_as(driver, base_url, "reviewer")
         driver.get(f"{base_url}/reviewer")
         assert "Reviewer" in driver.title or "Reviewer" in driver.page_source
 
@@ -209,6 +230,37 @@ class TestArticleRejection:
         assert "REJECTED" in table_text
 
 
+class TestReaderEdition:
+    def test_approved_article_can_be_read_and_bookmarked(self, driver, base_url):
+        title = "Reader Edition Selenium Story"
+        submit_article(
+            driver,
+            base_url,
+            title=title,
+            author="Reporter",
+            content="A complete story for the public reader edition.",
+        )
+        open_article_in_reviewer(driver, base_url, title)
+        activate_button(driver.find_element(By.CSS_SELECTOR, ".btn-approve"))
+        WebDriverWait(driver, 10).until(
+            EC.text_to_be_present_in_element((By.ID, "message"), "approved")
+        )
+
+        login_as(driver, base_url, "reader")
+        driver.get(base_url)
+        story_link = WebDriverWait(driver, 10).until(
+            EC.element_to_be_clickable((By.LINK_TEXT, title))
+        )
+        activate_button(story_link)
+        assert title in driver.find_element(By.TAG_NAME, "h1").text
+        activate_button(driver.find_element(By.ID, "bookmark-button"))
+        WebDriverWait(driver, 10).until(
+            EC.text_to_be_present_in_element((By.ID, "bookmark-message"), "Saved")
+        )
+        driver.get(f"{base_url}/reader")
+        assert title in driver.find_element(By.TAG_NAME, "body").text
+
+
 class TestValidationErrors:
     """Scenarios 12-13: Required-field validation – empty fields rejected client-side."""
 
@@ -218,7 +270,8 @@ class TestValidationErrors:
         The browser enforces 'required' HTML attributes – the form should not
         submit and no success message should appear.
         """
-        driver.get(f"{base_url}/")
+        login_as(driver, base_url, "publisher")
+        driver.get(f"{base_url}/publisher/articles/new")
         wait_for_visible(driver, "#title")
 
         # Do NOT fill in any fields; click Submit directly
@@ -232,13 +285,13 @@ class TestValidationErrors:
 
     def test_whitespace_only_fields_show_error(self, driver, base_url):
         """
-        Submit with whitespace-only values.
+        Submit with whitespace-only headline and story values.
         The server rejects them with HTTP 400; the client shows an error box.
         """
-        driver.get(f"{base_url}/")
+        login_as(driver, base_url, "publisher")
+        driver.get(f"{base_url}/publisher/articles/new")
         wait_for_visible(driver, "#title")
         driver.find_element(By.ID, "title").send_keys("   ")
-        driver.find_element(By.ID, "author").send_keys("   ")
         driver.find_element(By.ID, "content").send_keys("   ")
         click_submission_button(driver)
 

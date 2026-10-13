@@ -170,3 +170,4 @@ cython_debug/
 # Excluding SQLite database file if it's generated locally (for MVP, we will exclude dev db if created, but typically we might commit a skeleton DB or just recreate it)
 *.sqlite3
 app.db
+*.db.secret

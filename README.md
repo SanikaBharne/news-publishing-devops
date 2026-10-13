@@ -9,27 +9,15 @@ The primary academic objective is to demonstrate the progressive implementation 
 Manual news publishing workflows lack automated testing, continuous integration, and standardized configuration management. Deployments are slow, error-prone, and inconsistent across environments. This project solves that by implementing an automated CI/CD pipeline.
 
 ## 3. MVP Scope
-The application MVP contains ONLY:
-- News article/request submission
-- Required-field/data validation
-- Reviewer dashboard
-- Reviewer approval
-- Reviewer rejection with mandatory rejection comment
-- Article status tracking
-
-*(Note: The application is monolithic. Authentication, RBAC, microservices, and other complex features are explicitly out of scope).*
+The Flask/SQLite MVP supports a public approved-story edition, Reader accounts and saved stories, and Publisher accounts for drafting, submission, and editorial review. Existing article statuses remain `DRAFT`, `SUBMITTED`, `APPROVED`, and `REJECTED`; the public edition exposes approved stories only. The workflow intentionally stops at editorial approval and does not implement publishing.
 
 ## 4. Key Features
 **Currently Implemented:**
-- Minimal Flask application skeleton with a `/health` endpoint.
-- Local development environment configured.
-- Git repository initialized.
-
-**Planned for Future Weeks:**
-- Article submission form and validation logic.
-- Reviewer dashboard with approve/reject actions.
-- Status tracking visibility.
-- Automated CI/CD pipelines and deployment.
+- Reader and Publisher session sign-in with hashed passwords, role checks, and CSRF protection.
+- Public approved-story search, category filter, detail pages, and Reader bookmarks.
+- Publisher drafts, submission, preview, dashboard, and review/approval/rejection workflow.
+- Existing Flask JSON article APIs, SQLite persistence, and `/health` endpoint.
+- pytest/Selenium tests, Docker packaging, and Jenkins pipeline.
 
 ## 5. Technology Stack
 | Category | Selection | Status |
@@ -123,11 +111,18 @@ Status: In progress
    ```bash
    pip install -r requirements.txt
    ```
-3. Run the Flask application:
+3. Configure private demo credentials and start the Windows-compatible deployment:
    ```bash
-   python src/app.py
+   $env:DEMO_READER_USERNAME = "reader-demo"
+   $securePassword = Read-Host "Reader password" -AsSecureString
+   $env:DEMO_READER_PASSWORD = [System.Net.NetworkCredential]::new("", $securePassword).Password
+   $env:DEMO_PUBLISHER_USERNAME = "publisher-demo"
+   $securePassword = Read-Host "Publisher password" -AsSecureString
+   $env:DEMO_PUBLISHER_PASSWORD = [System.Net.NetworkCredential]::new("", $securePassword).Password
+   python scripts/deploy.py
    ```
-4. Verify the health endpoint at `http://127.0.0.1:5000/health`.
+   Account setup, reviewer account, Docker volume commands, and secret handling are documented in [NewsFlow account setup](docs/newsflow-accounts.md).
+4. Verify the health endpoint at `http://127.0.0.1:5001/health`.
 
 ## 9. How to Run Tests
 Run the pytest test suite:

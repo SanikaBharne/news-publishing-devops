@@ -31,7 +31,7 @@ pipeline {
             steps {
                 bat """
                     call %VENV_DIR%\\Scripts\\activate.bat
-                    python -m pytest tests\\test_submission.py tests\\test_reviewer.py -v
+                    python -m pytest tests\\test_submission.py tests\\test_reviewer.py tests\\test_auth_public.py -v
                 """
             }
         }
