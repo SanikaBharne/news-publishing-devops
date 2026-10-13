@@ -2,11 +2,21 @@ import pytest
 import sqlite3
 import os
 import sys
+import runpy
 
 # Add the src directory to the path so app can be imported
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '../src')))
 
 from app import app, init_db
+
+def test_database_path_environment_override(monkeypatch, tmp_path):
+    configured_path = str(tmp_path / 'configured.db')
+    monkeypatch.setenv('DATABASE_PATH', configured_path)
+
+    app_path = os.path.abspath(os.path.join(os.path.dirname(__file__), '../src/app.py'))
+    module_globals = runpy.run_path(app_path)
+
+    assert module_globals['DATABASE'] == configured_path
 
 @pytest.fixture
 def client():

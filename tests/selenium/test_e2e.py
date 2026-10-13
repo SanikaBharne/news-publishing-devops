@@ -13,6 +13,7 @@ Run with:
 import time
 import pytest
 from selenium.webdriver.common.by import By
+from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 
@@ -35,6 +36,19 @@ def wait_for_text_in_element(driver, css, text, timeout=10):
     )
 
 
+def activate_button(button):
+    """Activate a visible button through its native keyboard interaction."""
+    button.send_keys(Keys.ENTER)
+
+
+def click_submission_button(driver):
+    """Activate the form submit control without relying on viewport coordinates."""
+    button = WebDriverWait(driver, 10).until(
+        EC.element_to_be_clickable((By.CSS_SELECTOR, "#submission-form button[type='submit']"))
+    )
+    activate_button(button)
+
+
 def submit_article(driver, base_url, title, author, content):
     """Navigate to the submission page and submit an article."""
     driver.get(f"{base_url}/")
@@ -45,7 +59,7 @@ def submit_article(driver, base_url, title, author, content):
     driver.find_element(By.ID, "author").send_keys(author)
     driver.find_element(By.ID, "content").clear()
     driver.find_element(By.ID, "content").send_keys(content)
-    driver.find_element(By.CSS_SELECTOR, "button[type='submit']").click()
+    click_submission_button(driver)
     # Wait for the message box to appear
     msg = wait_for_visible(driver, "#message")
     return msg
@@ -69,7 +83,7 @@ def open_article_in_reviewer(driver, base_url, title):
     for row in rows:
         cells = row.find_elements(By.TAG_NAME, "td")
         if len(cells) >= 2 and cells[1].text == title:
-            row.find_element(By.CSS_SELECTOR, ".btn-view").click()
+            activate_button(row.find_element(By.CSS_SELECTOR, ".btn-view"))
             break
 
     modal = wait_for_visible(driver, "#article-modal")
@@ -86,7 +100,7 @@ class TestArticleSubmission:
     def test_submission_page_loads(self, driver, base_url):
         """Scenario 1: Open the article submission page."""
         driver.get(f"{base_url}/")
-        assert "Submit" in driver.title or "Submit" in driver.page_source
+        assert "Newsflow" in driver.title or "Newsroom" in driver.page_source
 
     def test_valid_article_submission(self, driver, base_url):
         """Scenarios 2-4: Enter valid fields, submit, verify success message."""
@@ -142,7 +156,7 @@ class TestArticleApproval:
         open_article_in_reviewer(driver, base_url, title)
 
         # Click the Approve button
-        driver.find_element(By.CSS_SELECTOR, ".btn-approve").click()
+        activate_button(driver.find_element(By.CSS_SELECTOR, ".btn-approve"))
 
         # The modal closes; success message should appear
         wait_for_visible(driver, "#message")
@@ -177,7 +191,7 @@ class TestArticleRejection:
         comment_box.send_keys("This article does not meet editorial standards.")
 
         # Click Reject
-        driver.find_element(By.CSS_SELECTOR, ".btn-reject").click()
+        activate_button(driver.find_element(By.CSS_SELECTOR, ".btn-reject"))
 
         # Confirm rejection message
         wait_for_visible(driver, "#message")
@@ -208,7 +222,7 @@ class TestValidationErrors:
         wait_for_visible(driver, "#title")
 
         # Do NOT fill in any fields; click Submit directly
-        driver.find_element(By.CSS_SELECTOR, "button[type='submit']").click()
+        click_submission_button(driver)
 
         # The form has required attributes – HTML5 validation prevents submission.
         # The #message div should remain hidden (display:none).
@@ -226,7 +240,7 @@ class TestValidationErrors:
         driver.find_element(By.ID, "title").send_keys("   ")
         driver.find_element(By.ID, "author").send_keys("   ")
         driver.find_element(By.ID, "content").send_keys("   ")
-        driver.find_element(By.CSS_SELECTOR, "button[type='submit']").click()
+        click_submission_button(driver)
 
         msg = wait_for_visible(driver, "#message")
         assert msg.is_displayed(), "Error message should be visible for whitespace-only fields"

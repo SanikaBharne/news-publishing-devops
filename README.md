@@ -110,6 +110,13 @@ Status: Completed
 - Automated `pytest` execution verifying 14/14 tests pass
 - [Week 7 documentation](docs/week-07/week-07-summary.md)
 
+## Week 11 – Docker Image and Container Lifecycle
+
+Status: In progress
+
+- Dockerfile, container lifecycle, health check, and SQLite volume instructions: [Week 11 documentation](docs/week-11/week-11-summary.md)
+- Docker engine verification is required before image and container evidence can be captured.
+
 ## 8. How to Run Locally
 1. Ensure Python 3.x is installed.
 2. Install dependencies:
