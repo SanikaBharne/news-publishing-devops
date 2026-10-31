@@ -18,4 +18,4 @@ No screenshot files were found under `docs/evidence/` during the Week 15 audit. 
 | 12 | Pending | Application health check | Genuine `/health` HTTP 200 response from the intended running deployment; show the URL and response. |
 | 13 | Pending | GitHub final commit and merged pull request, if applicable | GitHub commit and PR page showing the Week 15 commit and, only after it happens, merged state. A created but unmerged PR must not be shown as merged. |
 
-The test suites passed locally, but no execution screenshots were captured. Jenkins and Docker evidence cannot be captured until those services are available and an actual run has completed. The Week 15 branch has not yet been pushed and its pull request has not been created or merged, so item 13 also remains pending.
+The test suites passed locally, but no execution screenshots were captured. Jenkins and Docker evidence cannot be captured until those services are available and an actual run has completed. The Week 15 branch has been pushed, but its pull request has not been created or merged, so item 13 remains pending.

@@ -46,6 +46,7 @@ Editorial reviewers use a separate **Publisher** account; there is no separate `
 | Live health check | Pending | Port 5001 was unreachable. The isolated Selenium server did pass its `/health` startup check. |
 | SQLite | Verified read-only | Local `app.db` passed SQLite integrity check and contains 33 article rows. No Docker volume could be inspected. |
 | Screenshots | Pending | No screenshot evidence files were found. See the [evidence checklist](week-15-evidence-checklist.md). |
-| GitHub release | Pending | The Week 15 branch has not yet been pushed and no Week 15 pull request has been created or merged. |
+| GitHub push | Verified | `feature/week15-final-validation` at `3dc11d0` is pushed to `origin`. |
+| Pull request | Pending | No Week 15 pull request has been created or merged. |
 
 This is **application-validation complete, deployment/release verification pending**. Do not treat historical Week 12-14 Jenkins or Docker results as current Week 15 results. A live deployment, Docker image build, Jenkins run, and screenshot evidence are still required before claiming a fully verified release.
