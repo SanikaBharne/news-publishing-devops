@@ -1,52 +1,108 @@
-# Week 15 - Final Validation, Release, and Documentation
+# NewsFlow – Week 15 Final Validation Summary
 
-**Validation date:** 2026-10-31
-**Audited source:** `feature/newsflow-ui-redesign` at `50f56c3`
-**Week 15 work branch:** `feature/week15-final-validation`
+## Project: NewsFlow DevOps
 
-## Objectives
+This is a consolidated summary of the 15-week academic **NewsFlow – CI/CD Pipeline for a News Publishing Workflow** project, prepared for mentor review. The Flask/SQLite application supports article submission, editorial review, and reader access to approved stories; it stops at editorial approval and does not implement a separate publishing action. Ansible/Puppet configuration management is outside the implemented scope.
 
-- Audit the application, existing test suites, Jenkins pipeline, Docker configuration, deployment notes, and Week 1-14 records.
-- Run the available Python and Selenium suites separately and record their actual results.
-- Check, without changing, the local SQLite database and the availability of Jenkins, Docker, and the deployed application.
-- Prepare final project, test, deployment, and screenshot-evidence documentation.
+---
 
-## Work performed
+## Week 1 – Problem Definition and Scope
 
-- Reviewed the Week 1-14 summaries and the current application, tests, Jenkinsfile, Dockerfile, deployment scripts, and release evidence.
-- Ran the backend pytest suite and Selenium browser suite independently. Both completed successfully; see the [final testing report](final-testing-report.md).
-- Checked the local `app.db` read-only: SQLite returned `integrity_check=ok` and 33 article rows. The tests use dedicated test databases or a temporary Selenium database; no application database or Docker volume was reset.
-- Checked the available services. The Docker client is installed, but the Docker Desktop Linux engine is unavailable. Nothing was built, started, stopped, or deployed. Jenkins on `127.0.0.1:8080` did not respond, and the current live application on port 5001 was unreachable.
-- No application code or tests needed changes. No screenshots were present in the documentation evidence tree.
-- Created the Week 15 documentation set. The repository already contained unrelated uncommitted README and untracked white-paper/database-backup changes; those were left untouched and are not part of this documentation.
+The project began with identifying the problem of manual deployment and inconsistent release workflows. The main users were news writers and reviewers/editors. The objective was to build a simple but functional news publishing workflow and to implement DevOps practices such as automation, testing, deployment, and release readiness. The project scope was limited to a monolithic application with no unnecessary features, and the success criteria focused on article submission, review, approval, and status tracking.
 
-## Verified features
+## Week 2 – Agile Planning and DevOps Work
 
-The current source is verified by the passing automated suites, including browser workflows on an isolated local test server:
+Week 2 translated the problem statement into an Agile roadmap. The team created user stories, acceptance criteria, a product backlog, a 15-week plan, and a Kanban-style task board. The DevOps lifecycle was mapped from planning and coding to build, test, release, deploy, operate, and monitor. Key risks and dependencies were identified, and a Definition of Done was established so that work was only considered complete after validation and Git readiness.
 
-- Publisher article submission, required-field and whitespace validation, and submitted status.
-- Reviewer dashboard listing, approval, rejection with a mandatory non-whitespace comment, status tracking, and missing-article handling.
-- Reader access to approved content, public search/category filtering, bookmarks, and denial of unapproved content.
-- Authentication/role checks, CSRF checks, prevention of self-review, and the approval-to-reader-publication flow.
-- Article API submission/listing/detail and approval/rejection endpoints.
-- Local SQLite file integrity and existing article-row presence were checked read-only.
+## Week 3 – Requirements, Architecture, and Technology Setup
 
-Editorial reviewers use a separate **Publisher** account; there is no separate `reviewer` account role. Authentication is implemented, but there is no public account registration. The automated test database and Selenium accounts are isolated from the local project database.
+This week converted the project problem into a concrete technical design. The architecture, technology stack, use cases, requirements, data model, and API specification were documented. The selected stack included Python, Flask, SQLite, pytest, Git, and supporting deployment tools. The application architecture was defined as a browser-to-Flask-to-SQLite flow, while the DevOps architecture included GitHub, Jenkins, Docker, and deployment automation. The local environment was also configured and verified.
 
-## Final status
+## Week 4 – Git and GitHub Setup
 
-| Area | Status | Evidence / limitation |
-|---|---|---|
-| Application workflows | Verified in automated tests | 24 backend tests and 9 Selenium browser tests passed. The deployed/live application was not reachable during this audit. |
-| Unit tests | Verified | 24 passed; 0 failed; 0 skipped. |
-| Selenium tests | Verified | 9 passed; 0 failed; 0 skipped. |
-| Integration tests | Partially covered | No separate integration-test suite exists. Cross-role approval-to-reader visibility is tested and passed within the backend suite; Selenium covers end-to-end workflows. |
-| Jenkins | Pending | Jenkins did not respond at `127.0.0.1:8080`; no build was started. |
-| Docker build/deployment | Pending | Docker Engine unavailable; no image/container operation was attempted. |
-| Live health check | Pending | Port 5001 was unreachable. The isolated Selenium server did pass its `/health` startup check. |
-| SQLite | Verified read-only | Local `app.db` passed SQLite integrity check and contains 33 article rows. No Docker volume could be inspected. |
-| Screenshots | Pending | No screenshot evidence files were found. See the [evidence checklist](week-15-evidence-checklist.md). |
-| GitHub push | Verified | `feature/week15-final-validation` at `3dc11d0` is pushed to `origin`. |
-| Pull request | Pending | No Week 15 pull request has been created or merged. |
+Week 4 focused on version control best practices. The repository structure was organized into source, tests, docs, and configuration files. A `.gitignore`, README, standard branching approach, and commit conventions were established. The project followed a branching strategy with `main`, `development`, and `feature/*` branches, and a sample pull request workflow was demonstrated. This created a clean foundation for development and team-based collaboration.
 
-This is **application-validation complete, deployment/release verification pending**. Do not treat historical Week 12-14 Jenkins or Docker results as current Week 15 results. A live deployment, Docker image build, Jenkins run, and screenshot evidence are still required before claiming a fully verified release.
+## Week 5 – Article Submission and Validation
+
+The first MVP feature implemented was article submission. The Flask API accepted article details and stored valid submissions in SQLite with the status `SUBMITTED`. Required-field validation was added so missing or whitespace-only fields were rejected with a clear error response. Automated tests were written to verify valid and invalid cases, and the feature was merged into the development branch after successful validation.
+
+## Week 6 – Reviewer Workflow and Status Tracking
+
+Week 6 completed the core application MVP by adding the reviewer dashboard, article approval, article rejection, and status tracking. Reviewers could view submitted articles, approve them, or reject them with a mandatory comment. The app updated the article state accordingly and enforced validation rules for rejection comments. Automated tests confirmed the review workflow, and the feature was merged into the development branch.
+
+## Week 7 – Jenkins CI Pipeline
+
+The project moved into CI/CD automation in Week 7. Jenkins and a declarative `Jenkinsfile` were configured for checkout, dependency installation, and test execution. Historical documentation describes earlier pipeline activity; the current release was not run in Jenkins, so its pipeline status is unverified.
+
+## Week 8 – Jenkins Deployment and Health Validation
+
+Week 8 added deployment scripts and HTTP health checks to the pipeline workflow. These components and historical deployment checks are documented, but Jenkins and deployment execution for the current release remain unverified.
+
+## Week 9 – Selenium End-to-End Testing
+
+The project introduced Selenium-based testing for article submission, reviewer dashboard behavior, approval, rejection with a comment, and form validation. In the current local audit, all 9 Selenium tests passed using the project's virtual environment and an isolated test server and database.
+
+## Week 10 – Jenkins with Selenium Integration
+
+The Jenkinsfile includes a Selenium test stage alongside deployment and health-check stages. The current pipeline was not run. The Selenium fixture starts an isolated local server, so its successful local run does not demonstrate testing against a deployed container.
+
+## Week 11 – Docker Packaging and Container Lifecycle
+
+The Dockerfile and deployment scripts define image packaging, runtime health checks, and a persistent SQLite data path. Historical Docker build/deployment records exist, but the Docker engine was unavailable during the current audit, so no current-release image or container was verified.
+
+## Week 12 – Jenkins and Docker Deployment Integration
+
+Week 12 documents Jenkins-Docker integration, deployment checks, and named-volume use. These are historical results, not a verification of the current release. The current Jenkins pipeline and Docker deployment were not run, and database persistence across a current-release application or container restart has not been verified.
+
+## Week 13 – Monitoring and Deployment Verification
+
+Week 13 records historical checks of an application endpoint, container, and logs, and documents monitoring procedures. Those records do not establish that the current release is running or healthy.
+
+## Week 14 – Release Readiness and Final Pre-Release Checks
+
+Week 14 documented release-readiness checks and noted that historical deployment and test results needed fresh confirmation. The current audit likewise found that Jenkins and Docker release execution and a live application health check remain unverified.
+
+## Week 15 – Final Validation, Release Preparation, and Documentation
+
+Week 15 audited the application, test suites, Jenkins pipeline, Docker configuration, database, and documentation. The current local audit passed **24 backend tests** and **9 Selenium tests** (**33 passed total; 0 failed, 0 skipped**). SQLite integrity was checked read-only and returned `ok`; persistence after a current-release restart was not tested. Jenkins job/build details require authentication, the Docker engine was unavailable, and the application health endpoint was unreachable. Therefore current-release Jenkins/Docker execution and deployment health remain unverified. No screenshots were found, and the Week 15 branch has no final pull request or merge.
+
+---
+
+## Final Project Outcome
+
+The NewsFlow project implements an article-submission and editorial-review workflow with DevOps practices developed across the project. The application supports submission, validation, reviewer dashboard actions, approval/rejection, and status tracking. It stops at editorial approval and does not implement a separate publishing action. Automated tests verified application behavior and user journeys locally; current-release infrastructure verification remains pending.
+
+The project demonstrates a realistic DevOps learning path that covers:
+- application features and validation
+- Git and GitHub workflow
+- CI automation with Jenkins
+- deployment automation and health checks
+- browser-based UI testing with Selenium
+- Docker packaging and deployment concepts
+- release-readiness documentation and final validation
+
+The current local test results are **24 backend tests passed, 9 Selenium tests passed, 33 passed total**. These local results do not imply that the Jenkins pipeline or Docker deployment succeeded for the current release.
+
+## Final Status Summary
+
+### Verified working features
+- Article submission works correctly
+- Required fields are enforced
+- Reviewer dashboard displays submitted articles
+- Reviews can approve or reject articles
+- Rejections require a clear comment
+- Article status updates are tracked correctly
+- Backend tests: **24 passed**; Selenium tests: **9 passed**; **33 passed total**
+- The existing SQLite database passed a read-only integrity check; restart persistence for the current release is not verified
+
+### Pending or environment-limited items
+- Current-release Jenkins pipeline execution and stage results
+- Current-release Docker image build and container deployment validation
+- Live health-check verification on the actual deployed app
+- Database persistence across a current-release application/container restart
+- Screenshot evidence collection
+- Week 15 PR creation, review, and merge
+
+### Overall conclusion
+
+The application workflows are validated by the current local test suites: 24 backend tests and 9 Selenium tests passed. Jenkins and Docker results in earlier weekly records are historical; current-release pipeline execution, image build, deployment health, and database restart persistence remain unverified. The final PR and genuine screenshot evidence also remain pending, so the project is not yet a fully verified release.

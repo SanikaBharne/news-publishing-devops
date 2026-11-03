@@ -1,12 +1,12 @@
-# CI/CD Pipeline for a News Publishing Workflow
+# NewsFlow – CI/CD Pipeline for a News Publishing Workflow
 
 ## 1. Project Description
-This is a 15-week academic DevOps project. The goal is to build a small, simple News Publishing Workflow application and progressively apply Git/GitHub, Jenkins CI, automated Selenium testing, Docker, Jenkins-based continuous deployment, and Ansible/Puppet configuration management.
+NewsFlow is a 15-week academic DevOps project: a Flask/SQLite article-submission and editorial-review workflow used to demonstrate Git/GitHub, Jenkins CI, Selenium testing, and Docker deployment practices. The application stops at editorial approval; it does not implement a separate article-publishing action. Ansible/Puppet configuration management is outside the implemented scope.
 
 The primary academic objective is to demonstrate the progressive implementation of DevOps practices rather than to develop a full-scale news portal.
 
 ## 2. Problem Statement
-Manual news publishing workflows lack automated testing, continuous integration, and standardized configuration management. Deployments are slow, error-prone, and inconsistent across environments. This project solves that by implementing an automated CI/CD pipeline.
+Manual editorial workflows and software deployments can lack repeatable testing and consistent release practices. NewsFlow demonstrates an article-review workflow alongside automated testing and documented CI/CD and deployment components.
 
 ## 3. MVP Scope
 The Flask/SQLite MVP supports a public approved-story edition, Reader accounts and saved stories, and Publisher accounts for drafting, submission, and editorial review. Existing article statuses remain `DRAFT`, `SUBMITTED`, `APPROVED`, and `REJECTED`; the public edition exposes approved stories only. The workflow intentionally stops at editorial approval and does not implement publishing.
@@ -17,7 +17,7 @@ The Flask/SQLite MVP supports a public approved-story edition, Reader accounts a
 - Public approved-story search, category filter, detail pages, and Reader bookmarks.
 - Publisher drafts, submission, preview, dashboard, and review/approval/rejection workflow.
 - Existing Flask JSON article APIs, SQLite persistence, and `/health` endpoint.
-- pytest/Selenium tests, Docker packaging, and Jenkins pipeline.
+- pytest/Selenium tests, Docker packaging, and a Jenkins pipeline definition. Current-release Jenkins and Docker execution have not been verified.
 
 ## 5. Technology Stack
 | Category | Selection | Status |
@@ -26,7 +26,7 @@ The Flask/SQLite MVP supports a public approved-story edition, Reader accounts a
 | Frontend | HTML/CSS/JS + Jinja2 | ✅ Implemented |
 | Backend | Flask | ✅ Installed |
 | Database | SQLite | ✅ Implemented |
-| Testing | pytest + Selenium | ✅ Implemented and locally verified |
+| Testing | pytest + Selenium | ✅ Locally verified: 24 backend and 9 Selenium tests passed |
 | Version Control | Git + GitHub | ✅ Initialized |
 
 ## 6. Project Structure
@@ -47,6 +47,8 @@ project-root/
 ```
 
 ## 7. Current Project Status
+
+**Current audit:** 24 backend tests and 9 Selenium tests passed (33 total). The Jenkins pipeline, Docker build/deployment, live application health, and current-release database persistence after restart remain unverified. Historical Jenkins and Docker results below are not evidence of a successful current-release run.
 
 ## Week 4 – Git/GitHub Initialization
 
@@ -71,7 +73,7 @@ Status: Completed
 - Required-field validation (title, content, author)
 - Whitespace-only rejection via `.strip()`
 - SQLite persistence with status `SUBMITTED`
-- 6 pytest unit tests (all passing)
+- 6 pytest unit tests passed at the Week 5 milestone (historical count; current backend suite: 24 passed)
 - Git workflow: `feature/article-submission` → `development`
 - [Week 5 documentation](docs/week-05/week-05-summary.md)
 
@@ -83,7 +85,7 @@ Status: Completed
 - Implemented `PUT /api/articles/<id>/approve` endpoint (transitions status to `APPROVED`)
 - Implemented `PUT /api/articles/<id>/reject` endpoint with mandatory rejection comment validation
 - Exposed article details and status via `GET /api/articles/<id>`
-- Added 8 unit tests in `tests/test_reviewer.py` (total 14/14 tests passing)
+- Added 8 unit tests in `tests/test_reviewer.py` (14 tests passed at the Week 6 milestone; current backend suite: 24 passed)
 - Git workflow: `feature/reviewer-workflow` → `development`
 - [Week 6 documentation](docs/week-06/week-06-summary.md)
 
@@ -91,28 +93,35 @@ Status: Completed
 
 Status: Completed
 
-- Installed and configured Jenkins server
+- Jenkins server and declarative pipeline were configured; current-release execution is not verified
 - Created declarative `Jenkinsfile` pipeline
 - Configured Jenkins job to pull from GitHub `development` branch
 - Automated Python virtual environment creation and dependency installation
-- Automated `pytest` execution verifying 14/14 tests pass
+- Historical pipeline documentation records test execution; the current release has not been run in Jenkins
 - [Week 7 documentation](docs/week-07/week-07-summary.md)
+
+## Weeks 8–10 – Deployment Checks and Selenium Testing
+
+- **Week 8:** Deployment scripts and health-check workflow are documented. Current Jenkins/deployment execution is unverified. [Week 8 summary](docs/week-08/week-08-summary.md)
+- **Week 9:** Selenium end-to-end tests are implemented; all 9 passed in the current local audit. [Week 9 summary](docs/week-09/week-09-summary.md)
+- **Week 10:** Selenium is included in the Jenkins pipeline definition, but the current pipeline was not run. The Selenium fixture starts an isolated test server, so this does not verify tests against a deployed container. [Week 10 summary](docs/week-10/week-10-summary.md)
 
 ## Week 11 – Docker Image and Container Lifecycle
 
-Status: Completed
+Status: Docker packaging and deployment scripts are implemented. Current-release image/container verification is pending because the Docker engine was unavailable during the audit.
 
 - Dockerfile, container lifecycle, health check, and SQLite volume instructions: [Week 11 documentation](docs/week-11/week-11-summary.md)
-- Named-volume deployment and health-check records are available in the [Week 12 documentation](docs/week-12/week-12-summary.md).
+- Historical named-volume deployment and health-check records are available in the [Week 12 documentation](docs/week-12/week-12-summary.md); current-release database persistence after restart is not verified.
 
-## Weeks 12–14 – Deployment, Monitoring, and Readiness
+## Weeks 12–15 – Deployment, Monitoring, and Final Validation
 
-- [Week 12: Jenkins and Docker deployment](docs/week-12/week-12-summary.md) — historical pipeline and deployment results.
-- [Week 13: Deployment monitoring](docs/week-13/week-13-summary.md) — application, container, health, and evidence checks.
-- [Week 14: Release readiness](docs/week-14/release-readiness.md) — original validation snapshot and the current integration update.
-- [Current integration evidence](docs/evidence/week-14/current-redesign-verification.md) — latest local tests, deployed image identity, and authenticated Jenkins build/source verification.
+- [Week 12: Jenkins and Docker deployment](docs/week-12/week-12-summary.md) — historical pipeline and deployment records; the current release pipeline and deployment remain unverified.
+- [Week 13: Deployment monitoring](docs/week-13/week-13-summary.md) — historical application, container, health, and evidence checks.
+- [Week 14: Release readiness](docs/week-14/release-readiness.md) — dated validation records, not current-release verification.
+- [Week 14 integration evidence](docs/evidence/week-14/current-redesign-verification.md) — records historical tests, deployment, and Jenkins evidence for earlier source revisions.
 - [Reader and Publisher setup and workflow](docs/newsflow-accounts.md).
 - [NewsFlow UI and security notes](docs/newsflow-ui-redesign.md).
+- **Week 15:** Current local tests passed (24 backend, 9 Selenium; 33 total); current Jenkins/Docker execution, restart persistence, final PR, and screenshots remain pending. [Week 15 summary](docs/week-15/week-15-summary.md)
 
 ## 8. How to Run Locally
 1. Ensure Python 3.x is installed.
@@ -138,6 +147,7 @@ Run the pytest test suite:
 ```bash
 python -m pytest -v
 ```
+Latest local audit: **24 backend tests passed, 9 Selenium tests passed (33 total)**. Jenkins and Docker were not verified for the current release; the local SQLite database passed a read-only integrity check, but persistence after a current-release restart was not tested.
 
 ## 10. Git Branching Strategy
 We follow a structured branching model:
@@ -152,13 +162,14 @@ Features are merged into `development` via Pull Requests.
 - **Week 5:** Article Submission with Validation ✅
 - **Week 6:** MVP Completion (Dashboard, Approval, Rejection, Status Tracking) ✅
 - **Week 7:** Jenkins CI and Pipeline as Code ✅
-- **Week 8:** Advanced CI configurations ⏳
-- **Week 9-10:** Selenium Tests and Continuous Testing ✅ (9 UI tests passed locally; redesign branch Jenkins run pending)
-- **Week 11:** Docker Image and Container Lifecycle ✅
-- **Week 12:** Jenkins-Docker Continuous Deployment ✅ (the latest verified Jenkins build used the Week 12 CD branch)
+- **Week 8:** Deployment scripts and health-check workflow documented; current pipeline/deployment run unverified ⏳
+- **Week 9:** Selenium end-to-end testing ✅ (9 tests passed locally)
+- **Week 10:** Selenium-Jenkins integration is configured; current Jenkins execution and deployed-container test target unverified ⏳
+- **Week 11:** Docker image and container lifecycle implemented; current Docker engine/build/deployment unverified ⏳
+- **Week 12:** Jenkins-Docker deployment documented and historically exercised; current-release pipeline, deployment, and restart persistence unverified ⏳
 - **Week 13:** Deployment monitoring and evidence documentation ✅
 - **Week 14:** Release-readiness documentation and NewsFlow integration on `feature/newsflow-ui-redesign` ✅; development merge, redesign Jenkins run, and screenshots remain pending
-- **Week 15:** Final End-to-End Release and Documentation ⏳
+- **Week 15:** Final documentation and local tests completed (24 backend + 9 Selenium; 33 total); Jenkins/Docker release verification, current-release database restart persistence, screenshots, and final PR remain pending ⏳
 
 ## 12. Documentation Links
 - [Week 1: Problem Definition & Scope](docs/week-01/week-01-summary.md)
@@ -168,13 +179,18 @@ Features are merged into `development` via Pull Requests.
 - [Week 5: Article Submission Feature](docs/week-05/week-05-summary.md)
 - [Week 6: Reviewer Workflow & MVP Completion](docs/week-06/week-06-summary.md)
 - [Week 7: Jenkins CI Pipeline](docs/week-07/week-07-summary.md)
+- [Week 8: Deployment and health validation](docs/week-08/week-08-summary.md)
+- [Week 9: Selenium end-to-end testing](docs/week-09/week-09-summary.md)
+- [Week 10: Jenkins-Selenium integration](docs/week-10/week-10-summary.md)
+- [Week 11: Docker image and container lifecycle](docs/week-11/week-11-summary.md)
 - [Week 12: Jenkins-Docker deployment](docs/week-12/week-12-summary.md)
 - [Week 13: Deployment monitoring](docs/week-13/week-13-summary.md)
 - [Week 14: Release readiness](docs/week-14/release-readiness.md)
 - [Week 14 evidence checklist](docs/week-14/evidence-checklist.md)
 - [NewsFlow Reader/Publisher account setup](docs/newsflow-accounts.md)
 - [NewsFlow redesign and verification](docs/newsflow-ui-redesign.md)
+- [NewsFlow DevOps white paper (six-page A4 HTML)](docs/white-paper/newsflow-devops-white-paper.html)
 - [Evidence Checklists](docs/evidence/)
 
 ## 13. Future DevOps Components
-Ansible/Puppet provisioning remains outside the implemented project scope. Jenkins, Docker packaging/deployment, Selenium testing, and the Gunicorn-based Docker runtime are already present; see the linked Week 12–14 records for the limits and verification status.
+Ansible/Puppet provisioning remains outside the implemented project scope. Jenkins pipeline code, Docker packaging/deployment scripts, Selenium testing, and the Gunicorn-based Docker runtime are present; their current-release Jenkins and Docker execution remains unverified. See the linked Week 12–15 records for historical results and current verification limits.
