@@ -1,6 +1,10 @@
 pipeline {
     agent any
 
+    tools {
+        maven 'Maven-3.9.16'
+    }
+
     options {
         disableConcurrentBuilds()
     }
@@ -42,6 +46,17 @@ pipeline {
                     call %VENV_DIR%\\Scripts\\activate.bat
                     if errorlevel 1 exit /b 1
                     pip install -r requirements.txt
+                    if errorlevel 1 exit /b 1
+                """
+            }
+        }
+
+        stage('Maven Validation') {
+            steps {
+                bat """
+                    where.exe mvn
+                    if errorlevel 1 exit /b 1
+                    mvn --batch-mode validate
                     if errorlevel 1 exit /b 1
                 """
             }
