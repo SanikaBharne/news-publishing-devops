@@ -77,6 +77,7 @@ def app_server():
             process.wait(timeout=5)
             output = process.stdout.read() if process.stdout else ""
             raise RuntimeError(f"Test server did not become healthy:\n{output}")
+        print(f"Selenium target: {base_url} (isolated temporary application)")
         os.environ["NEWSFLOW_TEST_PUBLISHER_USERNAME"] = TEST_PUBLISHER
         os.environ["NEWSFLOW_TEST_REVIEWER_USERNAME"] = TEST_REVIEWER
         os.environ["NEWSFLOW_TEST_READER_USERNAME"] = "selenium-reader"

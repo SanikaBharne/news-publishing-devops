@@ -196,6 +196,7 @@ try {
     Invoke-Docker -Arguments @(
         "run", "--detach", "--name", $ContainerName,
         "--label", "$projectLabelKey=$projectLabelValue",
+        "--restart", "unless-stopped",
         "--publish", "${HostPort}:5001",
         "--volume", "${VolumeName}:/data",
         "--env", "DATABASE_PATH=/data/app.db",

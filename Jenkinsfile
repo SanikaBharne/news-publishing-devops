@@ -7,12 +7,12 @@ pipeline {
 
     environment {
         DEPLOY_HOST = "127.0.0.1"
-        DEPLOY_PORT = "5001"
-        CONTAINER_NAME = "news-publishing-container"
-        DATABASE_VOLUME = "news-publishing-data"
+        DEPLOY_PORT = "5016"
+        CONTAINER_NAME = "newsflow-week15-staging"
+        DATABASE_VOLUME = "newsflow-week15-staging-data"
         IMAGE_NAME = "news-publishing-app"
-        IMAGE_TAG = "week12"
-        APP_BASE_URL = "http://127.0.0.1:5001"
+        IMAGE_TAG = "week15-staging"
+        APP_BASE_URL = "http://127.0.0.1:5016"
         VENV_DIR = "venv"
     }
 
@@ -94,7 +94,8 @@ pipeline {
                 bat """
                     call %VENV_DIR%\\Scripts\\activate.bat
                     if errorlevel 1 exit /b 1
-                    echo Selenium target: %APP_BASE_URL%
+                    echo Deployment smoke check target: %APP_BASE_URL% (checked in Health Check stage)
+                    echo Selenium starts an isolated temporary application; its actual URL is printed by the fixture.
                     python -m pytest tests\\selenium -v
                     if errorlevel 1 exit /b 1
                 """
