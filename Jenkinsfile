@@ -123,8 +123,8 @@ pipeline {
         failure {
             echo "Pipeline failed. Collecting logs from the named application container when it exists."
             script {
-                bat(returnStatus: true, script: 'powershell.exe -NoProfile -ExecutionPolicy Bypass -File scripts\\diagnose_container.ps1 -ContainerName news-publishing-container')
-                bat(returnStatus: true, script: 'docker ps -a --filter "name=^news-publishing-container$"')
+                bat(returnStatus: true, script: 'powershell.exe -NoProfile -ExecutionPolicy Bypass -File scripts\\diagnose_container.ps1 -ContainerName newsflow-week15-staging')
+                bat(returnStatus: true, script: 'docker ps -a --filter "name=^newsflow-week15-staging$"')
             }
         }
         always {
