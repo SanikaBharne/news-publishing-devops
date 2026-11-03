@@ -1,264 +1,103 @@
-const statusLabels = {
-    SUBMITTED: 'On the wire',
-    APPROVED: 'Cleared',
-    REJECTED: 'Spiked'
-};
+(() => {
+    const feed = document.getElementById("article-feed");
+    if (!feed) return;
 
-const statusClasses = {
-    SUBMITTED: 'status-submitted',
-    APPROVED: 'status-approved',
-    REJECTED: 'status-rejected'
-};
+    const search = document.getElementById("story-search");
+    const category = document.getElementById("category-filter");
+    const dateSort = document.getElementById("date-sort");
+    const count = document.getElementById("story-count");
+    const featured = document.getElementById("featured-story");
+    const empty = document.getElementById("empty-feed");
+    let searchTimer;
 
-let articles = [];
-let rejectionArticleId = null;
-
-function byId(id) {
-    return document.getElementById(id);
-}
-
-function escapeText(value) {
-    return String(value ?? '');
-}
-
-function statusTag(status) {
-    const tag = document.createElement('span');
-    tag.className = `status-tag ${statusClasses[status] || ''}`;
-    tag.textContent = statusLabels[status] || status;
-    return tag;
-}
-
-function articleMeta(article) {
-    const meta = document.createElement('div');
-    meta.className = 'article-meta';
-    const author = document.createElement('strong');
-    author.textContent = `By ${escapeText(article.author)}`;
-    meta.append(author, statusTag(article.status));
-    return meta;
-}
-
-function makeArticleCard(article, withActions) {
-    const card = document.createElement('article');
-    card.className = 'article-card';
-    card.dataset.articleId = article.id;
-
-    const meta = articleMeta(article);
-    const heading = document.createElement('h3');
-    heading.textContent = escapeText(article.title);
-    const content = document.createElement('p');
-    content.className = 'article-content';
-    content.textContent = escapeText(article.content);
-    card.append(meta, heading, content);
-
-    if (withActions) {
-        const actions = document.createElement('div');
-        actions.className = 'card-actions';
-        const approve = document.createElement('button');
-        approve.className = 'primary-button';
-        approve.type = 'button';
-        approve.textContent = 'Clear for publishing';
-        approve.addEventListener('click', () => updateArticle(article.id, 'approve'));
-        const reject = document.createElement('button');
-        reject.className = 'danger-button';
-        reject.type = 'button';
-        reject.textContent = 'Spike';
-        reject.addEventListener('click', () => openRejectionModal(article.id));
-        actions.append(approve, reject);
-        card.appendChild(actions);
+    function articleCard(article, isFeatured = false) {
+        const card = document.createElement("article");
+        card.className = isFeatured ? "featured-card" : "public-card";
+        if (article.cover_image) {
+            const image = document.createElement("img");
+            image.className = "story-thumbnail";
+            image.src = article.cover_image;
+            image.alt = article.title;
+            image.loading = "lazy";
+            card.append(image);
+        } else {
+            const placeholder = document.createElement("div");
+            placeholder.className = "story-thumbnail-placeholder";
+            placeholder.textContent = article.category || "NewsFlow";
+            card.append(placeholder);
+        }
+        const label = document.createElement("span");
+        label.className = "category-label";
+        label.textContent = article.category || "General";
+        const title = document.createElement("h3");
+        const link = document.createElement("a");
+        link.href = `/article/${encodeURIComponent(article.id)}`;
+        link.textContent = article.title;
+        title.append(link);
+        const standfirst = document.createElement("p");
+        standfirst.textContent = article.summary || article.content.slice(0, 220);
+        const meta = document.createElement("div");
+        meta.className = "article-meta";
+        meta.textContent = `By ${article.author} · ${article.submission_date}`;
+        card.append(label, title, standfirst, meta);
+        return card;
     }
-    return card;
-}
 
-function renderQueue() {
-    const list = byId('queue-list');
-    list.replaceChildren();
-    const submitted = articles.filter(article => article.status === 'SUBMITTED');
-    byId('queue-count').textContent = `${submitted.length} ${submitted.length === 1 ? 'story' : 'stories'}`;
-    if (!submitted.length) {
-        const empty = document.createElement('p');
-        empty.className = 'empty-state';
-        empty.textContent = 'The wire is clear. New submissions will appear here.';
-        list.appendChild(empty);
-        return;
-    }
-    submitted.forEach(article => list.appendChild(makeArticleCard(article, true)));
-}
-
-function renderBoardColumn(containerId, status) {
-    const container = byId(containerId);
-    container.replaceChildren();
-    const matching = articles.filter(article => article.status === status);
-    byId(`${status.toLowerCase()}-count`).textContent = matching.length;
-    if (!matching.length) {
-        const empty = document.createElement('p');
-        empty.className = 'empty-state';
-        empty.textContent = 'No stories yet.';
-        container.appendChild(empty);
-        return;
-    }
-    matching.forEach(article => {
-        const item = document.createElement('article');
-        item.className = 'board-item';
-        const title = document.createElement('h3');
-        title.textContent = escapeText(article.title);
-        const author = document.createElement('p');
-        author.className = 'article-meta';
-        author.textContent = `By ${escapeText(article.author)}`;
-        item.append(title, author);
-        container.appendChild(item);
-    });
-}
-
-function renderBoard() {
-    renderBoardColumn('submitted-items', 'SUBMITTED');
-    renderBoardColumn('approved-items', 'APPROVED');
-    renderBoardColumn('rejected-items', 'REJECTED');
-}
-
-function renderLive() {
-    const cleared = articles.filter(article => article.status === 'APPROVED');
-    byId('live-count').textContent = cleared.length;
-    const list = byId('live-list');
-    list.replaceChildren();
-    if (!cleared.length) {
-        const empty = document.createElement('p');
-        empty.className = 'empty-state';
-        empty.textContent = 'No stories have been cleared for publishing yet.';
-        list.appendChild(empty);
-        return;
-    }
-    cleared.forEach(article => list.appendChild(makeArticleCard(article, false)));
-}
-
-function renderAll() {
-    renderQueue();
-    renderBoard();
-    renderLive();
-}
-
-async function loadArticles() {
-    try {
-        const response = await fetch('/api/articles');
-        const data = await response.json();
-        if (!response.ok) throw new Error(data.error || 'Unable to load articles.');
-        articles = data;
-        renderAll();
-    } catch (error) {
-        showMessage('error', `Could not load newsroom data: ${error.message}`);
-    }
-}
-
-async function updateArticle(id, action, comment) {
-    const options = { method: 'PUT' };
-    if (action === 'reject') {
-        options.headers = { 'Content-Type': 'application/json' };
-        options.body = JSON.stringify({ comment });
-    }
-    try {
-        const response = await fetch(`/api/articles/${id}/${action}`, options);
-        const data = await response.json();
-        if (!response.ok) throw new Error(data.error || 'The article could not be updated.');
-        showMessage('success', action === 'approve' ? 'Article cleared for publishing.' : 'Article spiked with the desk note.');
-        closeRejectionModal();
-        await loadArticles();
-    } catch (error) {
-        showMessage('error', error.message);
-    }
-}
-
-function openRejectionModal(id) {
-    rejectionArticleId = id;
-    byId('reject-reason').value = '';
-    byId('reject-modal').classList.add('open');
-    byId('reject-reason').focus();
-}
-
-function closeRejectionModal() {
-    rejectionArticleId = null;
-    byId('reject-modal').classList.remove('open');
-}
-
-function showMessage(type, text) {
-    const message = byId('message');
-    message.className = type;
-    message.textContent = text;
-    message.style.display = 'block';
-    window.clearTimeout(showMessage.timeout);
-    showMessage.timeout = window.setTimeout(() => {
-        message.style.display = 'none';
-    }, 5000);
-}
-
-function activateSection(sectionId) {
-    const target = sectionId || 'newsroom';
-    document.querySelectorAll('[data-section]').forEach(section => {
-        section.hidden = section.id !== target;
-    });
-    document.querySelectorAll('.nav-link').forEach(link => {
-        link.classList.toggle('active', link.dataset.target === target);
-    });
-}
-
-function updateClock() {
-    const clock = byId('current-time');
-    if (clock) {
-        clock.textContent = new Intl.DateTimeFormat('en', {
-            weekday: 'short', month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit'
-        }).format(new Date());
-    }
-}
-
-document.addEventListener('DOMContentLoaded', () => {
-    byId('submission-form').addEventListener('submit', async event => {
-        event.preventDefault();
-        const form = event.currentTarget;
-        const payload = {
-            title: byId('title').value,
-            author: byId('author').value,
-            content: byId('content').value
-        };
+    async function loadStories() {
+        const params = new URLSearchParams();
+        if (search.value.trim()) params.set("q", search.value.trim());
+        if (category.value) params.set("category", category.value);
+        params.set("sort", dateSort.value);
+        count.textContent = "Loading stories…";
         try {
-            const response = await fetch('/api/articles', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(payload)
-            });
-            const data = await response.json();
-            if (!response.ok) throw new Error(data.error || 'The story could not be sent.');
-            showMessage('success', `Story sent to the desk. Article ID: ${data.id}, Status: ${data.status}`);
-            form.reset();
-            await loadArticles();
+            const response = await fetch(`/api/public/articles?${params.toString()}`);
+            const articles = await response.json();
+            if (!response.ok) throw new Error(articles.error || "Stories could not be loaded.");
+
+            feed.replaceChildren();
+            featured.replaceChildren();
+            const [lead, ...rest] = articles;
+            if (lead && !search.value.trim() && !category.value) {
+                featured.append(articleCard(lead, true));
+                rest.forEach(article => feed.append(articleCard(article)));
+            } else {
+                articles.forEach(article => feed.append(articleCard(article)));
+            }
+            empty.hidden = articles.length !== 0;
+            count.textContent = `${articles.length} ${articles.length === 1 ? "story" : "stories"}`;
         } catch (error) {
-            showMessage('error', `Submission error: ${error.message}`);
+            count.textContent = "Stories unavailable";
+            empty.hidden = false;
+            empty.textContent = error.message;
         }
-    });
+    }
 
-    byId('reject-form').addEventListener('submit', event => {
-        event.preventDefault();
-        const reason = byId('reject-reason').value.trim();
-        if (!reason) {
-            showMessage('error', 'A reason is required before an article can be spiked.');
-            return;
-        }
-        updateArticle(rejectionArticleId, 'reject', reason);
+    search.addEventListener("input", () => {
+        window.clearTimeout(searchTimer);
+        searchTimer = window.setTimeout(loadStories, 250);
     });
-    byId('cancel-reject').addEventListener('click', closeRejectionModal);
-    byId('close-reject').addEventListener('click', closeRejectionModal);
-    byId('reject-modal').addEventListener('click', event => {
-        if (event.target === event.currentTarget) closeRejectionModal();
-    });
-
-    document.querySelectorAll('[data-target]').forEach(link => {
-        link.addEventListener('click', event => {
-            event.preventDefault();
-            const target = link.dataset.target;
-            activateSection(target);
-            window.history.replaceState(null, '', `#${target}`);
+    category.addEventListener("change", loadStories);
+    dateSort.addEventListener("change", loadStories);
+    fetch("/api/public/categories")
+        .then(response => {
+            if (!response.ok) throw new Error("Sections could not be loaded.");
+            return response.json();
+        })
+        .then(categories => categories.forEach(item => category.add(new Option(item, item))))
+        .catch(error => {
+            const message = document.getElementById("message");
+            message.className = "message error";
+            message.textContent = error.message;
+            message.style.display = "block";
         });
-    });
 
-    activateSection(window.location.hash.slice(1));
+    const clock = document.getElementById("current-time");
+    const updateClock = () => {
+        if (clock) clock.textContent = new Intl.DateTimeFormat("en", {
+            weekday: "short", month: "short", day: "numeric", hour: "numeric", minute: "2-digit"
+        }).format(new Date());
+    };
     updateClock();
     window.setInterval(updateClock, 30000);
-    loadArticles();
-});
+    loadStories();
+})();

@@ -2,11 +2,22 @@ import pytest
 import sqlite3
 import os
 import sys
+import runpy
+from werkzeug.security import generate_password_hash
 
 # Add the src directory to the path so app can be imported
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '../src')))
 
 from app import app, init_db
+
+def test_database_path_environment_override(monkeypatch, tmp_path):
+    configured_path = str(tmp_path / 'configured.db')
+    monkeypatch.setenv('DATABASE_PATH', configured_path)
+
+    app_path = os.path.abspath(os.path.join(os.path.dirname(__file__), '../src/app.py'))
+    module_globals = runpy.run_path(app_path)
+
+    assert module_globals['DATABASE'] == configured_path
 
 @pytest.fixture
 def client():
@@ -21,8 +32,18 @@ def client():
     with app.app_context():
         # Initialize test DB
         init_db()
-    
+        db = myapp.get_db()
+        cursor = db.execute(
+            "INSERT INTO users (username, password_hash, role, display_name) VALUES (?, ?, ?, ?)",
+            ("submission-publisher", generate_password_hash("test-password"), "publisher", "Test Publisher"),
+        )
+        publisher_id = cursor.lastrowid
+        db.commit()
+
     with app.test_client() as client:
+        with client.session_transaction() as session:
+            session["user_id"] = publisher_id
+            session["_csrf_token"] = "test-csrf-token"
         yield client
         
     # Cleanup after tests
@@ -34,7 +55,7 @@ def test_valid_submission(client):
         "title": "Test Title",
         "content": "Test Content",
         "author": "Test Author"
-    })
+    }, headers={"X-CSRF-Token": "test-csrf-token"})
     assert response.status_code == 201
     data = response.get_json()
     assert data["message"] == "Article submitted successfully"
@@ -45,7 +66,7 @@ def test_missing_title(client):
     response = client.post('/api/articles', json={
         "content": "Test Content",
         "author": "Test Author"
-    })
+    }, headers={"X-CSRF-Token": "test-csrf-token"})
     assert response.status_code == 400
     assert "required fields" in response.get_json()["error"]
 
@@ -53,7 +74,7 @@ def test_missing_content(client):
     response = client.post('/api/articles', json={
         "title": "Test Title",
         "author": "Test Author"
-    })
+    }, headers={"X-CSRF-Token": "test-csrf-token"})
     assert response.status_code == 400
     assert "required fields" in response.get_json()["error"]
 
@@ -61,7 +82,7 @@ def test_missing_author(client):
     response = client.post('/api/articles', json={
         "title": "Test Title",
         "content": "Test Content"
-    })
+    }, headers={"X-CSRF-Token": "test-csrf-token"})
     assert response.status_code == 400
     assert "required fields" in response.get_json()["error"]
 
@@ -70,7 +91,7 @@ def test_whitespace_only_fields(client):
         "title": "   ",
         "content": "Test Content",
         "author": "Test Author"
-    })
+    }, headers={"X-CSRF-Token": "test-csrf-token"})
     assert response.status_code == 400
     assert "required fields" in response.get_json()["error"]
 
@@ -80,7 +101,7 @@ def test_database_persistence_and_status(client):
         "title": "Persistent Title",
         "content": "Persistent Content",
         "author": "Persistent Author"
-    })
+    }, headers={"X-CSRF-Token": "test-csrf-token"})
     
     # Verify in DB
     conn = sqlite3.connect('test_app.db')

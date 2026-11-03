@@ -17,7 +17,7 @@ sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from src.app import app, init_db
 
-DEPLOY_PORT = 5001
+DEPLOY_PORT = int(os.environ.get("APP_PORT", "5001"))
 DEPLOY_HOST = "127.0.0.1"
 
 if __name__ == "__main__":
