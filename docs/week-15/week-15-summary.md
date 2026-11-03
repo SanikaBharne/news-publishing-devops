@@ -32,11 +32,11 @@ Week 6 completed the core application MVP by adding the reviewer dashboard, arti
 
 ## Week 7 – Jenkins CI Pipeline
 
-The project moved into CI/CD automation in Week 7. Jenkins and a declarative `Jenkinsfile` were configured for checkout, dependency installation, and test execution. Historical documentation describes earlier pipeline activity; the current release was not run in Jenkins, so its pipeline status is unverified.
+The project moved into CI/CD automation in Week 7. The declarative `Jenkinsfile` checks out the selected branch, installs Python dependencies, runs Maven-based Python syntax validation, and executes the tests. Jenkins build #4 of `NewsFlow-Week15-Final` passed on commit `928aebe` on 2026-11-03.
 
 ## Week 8 – Jenkins Deployment and Health Validation
 
-Week 8 added deployment scripts and HTTP health checks to the pipeline workflow. These components and historical deployment checks are documented, but Jenkins and deployment execution for the current release remain unverified.
+Week 8 added deployment scripts and HTTP health checks to the pipeline workflow. Jenkins build #4 deployed the image to isolated staging on port 5016 and the deployment health check passed.
 
 ## Week 9 – Selenium End-to-End Testing
 
@@ -44,15 +44,15 @@ The project introduced Selenium-based testing for article submission, reviewer d
 
 ## Week 10 – Jenkins with Selenium Integration
 
-The Jenkinsfile includes a Selenium test stage alongside deployment and health-check stages. The current pipeline was not run. The Selenium fixture starts an isolated local server, so its successful local run does not demonstrate testing against a deployed container.
+The Jenkinsfile includes a Selenium test stage alongside deployment and health-check stages. All 9 Selenium tests passed in Jenkins build #4 against the fixture's isolated temporary server. A separate health-check stage verified the deployed staging container; Selenium itself does not test that container.
 
 ## Week 11 – Docker Packaging and Container Lifecycle
 
-The Dockerfile and deployment scripts define image packaging, runtime health checks, and a persistent SQLite data path. Historical Docker build/deployment records exist, but the Docker engine was unavailable during the current audit, so no current-release image or container was verified.
+The Dockerfile and deployment scripts define image packaging, runtime health checks, and a persistent SQLite data path. Jenkins build #4 built image `news-publishing-app:week15-staging-build-4`, deployed it as `newsflow-week15-staging`, and verified its health. It used the isolated volume `newsflow-week15-staging-data`; restart persistence for this exact release container was not tested.
 
 ## Week 12 – Jenkins and Docker Deployment Integration
 
-Week 12 documents Jenkins-Docker integration, deployment checks, and named-volume use. These are historical results, not a verification of the current release. The current Jenkins pipeline and Docker deployment were not run, and database persistence across a current-release application or container restart has not been verified.
+Week 12 documents Jenkins-Docker integration, deployment checks, and named-volume use. Current Jenkins-Docker integration was verified in build #4, including Docker build, staging deployment, and health checks. Database persistence across a restart of this exact release container has not been verified.
 
 ## Week 13 – Monitoring and Deployment Verification
 
@@ -60,17 +60,17 @@ Week 13 records historical checks of an application endpoint, container, and log
 
 ## Week 14 – Release Readiness and Final Pre-Release Checks
 
-Week 14 documented release-readiness checks and noted that historical deployment and test results needed fresh confirmation. The current audit likewise found that Jenkins and Docker release execution and a live application health check remain unverified.
+Week 14 documented release-readiness checks and noted that historical deployment and test results needed fresh confirmation. At the time of the initial Week 15 audit, Jenkins and Docker execution and a live application health check had not yet been verified; the later build #4 results are recorded below.
 
 ## Week 15 – Final Validation, Release Preparation, and Documentation
 
-Week 15 audited the application, test suites, Jenkins pipeline, Docker configuration, database, and documentation. The current local audit passed **24 backend tests** and **9 Selenium tests** (**33 passed total; 0 failed, 0 skipped**). SQLite integrity was checked read-only and returned `ok`; persistence after a current-release restart was not tested. Jenkins job/build details require authentication, the Docker engine was unavailable, and the application health endpoint was unreachable. Therefore current-release Jenkins/Docker execution and deployment health remain unverified. No screenshots were found, and the Week 15 branch has no final pull request or merge.
+Week 15 audited the application, test suites, Jenkins pipeline, Docker configuration, database, and documentation. Local testing passed **24 backend tests** and **9 Selenium tests** (**33 passed total; 0 failed, 0 skipped**). Jenkins build #4 on commit `928aebe` also passed Maven validation, all 33 tests, Docker image build, isolated staging deployment, health checks, and final verification. The staging application returned HTTP 200 at `http://127.0.0.1:5016`; its container uses the dedicated `newsflow-week15-staging-data` volume. The existing SQLite database previously passed a read-only integrity check, but restart persistence for this exact release container remains unverified. The genuine Jenkins console log is saved at `docs/evidence/week-15/jenkins-build-4-console.txt`. Screenshots and final PR/merge remain pending.
 
 ---
 
 ## Final Project Outcome
 
-The NewsFlow project implements an article-submission and editorial-review workflow with DevOps practices developed across the project. The application supports submission, validation, reviewer dashboard actions, approval/rejection, and status tracking. It stops at editorial approval and does not implement a separate publishing action. Automated tests verified application behavior and user journeys locally; current-release infrastructure verification remains pending.
+The NewsFlow project implements an article-submission and editorial-review workflow with DevOps practices developed across the project. The application supports submission, validation, reviewer dashboard actions, approval/rejection, and status tracking. It stops at editorial approval and does not implement a separate publishing action. Automated tests verified application behavior and user journeys locally and in Jenkins; build #4 verified the pipeline and isolated Docker staging, while release-container restart persistence remains pending.
 
 The project demonstrates a realistic DevOps learning path that covers:
 - application features and validation
@@ -81,7 +81,7 @@ The project demonstrates a realistic DevOps learning path that covers:
 - Docker packaging and deployment concepts
 - release-readiness documentation and final validation
 
-The current local test results are **24 backend tests passed, 9 Selenium tests passed, 33 passed total**. These local results do not imply that the Jenkins pipeline or Docker deployment succeeded for the current release.
+The verified results are **24 backend tests passed, 9 Selenium tests passed, 33 passed total** locally and in Jenkins build #4. That build also verified Maven-based Python syntax validation, Docker staging deployment, and application health; it did not test restart persistence for the deployed release container.
 
 ## Final Status Summary
 
@@ -96,13 +96,10 @@ The current local test results are **24 backend tests passed, 9 Selenium tests p
 - The existing SQLite database passed a read-only integrity check; restart persistence for the current release is not verified
 
 ### Pending or environment-limited items
-- Current-release Jenkins pipeline execution and stage results
-- Current-release Docker image build and container deployment validation
-- Live health-check verification on the actual deployed app
-- Database persistence across a current-release application/container restart
+- Database persistence across a restart of the exact Jenkins build #4 staging container
 - Screenshot evidence collection
 - Week 15 PR creation, review, and merge
 
 ### Overall conclusion
 
-The application workflows are validated by the current local test suites: 24 backend tests and 9 Selenium tests passed. Jenkins and Docker results in earlier weekly records are historical; current-release pipeline execution, image build, deployment health, and database restart persistence remain unverified. The final PR and genuine screenshot evidence also remain pending, so the project is not yet a fully verified release.
+The application workflows passed locally and in Jenkins build #4: 24 backend tests and 9 Selenium tests passed, and the Maven validation, Docker image build, isolated staging deployment, and health checks succeeded. Restart persistence for that exact deployed release, the final PR/merge, and screenshot evidence remain pending, so the project is not yet fully verified for final release.

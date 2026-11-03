@@ -17,7 +17,7 @@ The Flask/SQLite MVP supports a public approved-story edition, Reader accounts a
 - Public approved-story search, category filter, detail pages, and Reader bookmarks.
 - Publisher drafts, submission, preview, dashboard, and review/approval/rejection workflow.
 - Existing Flask JSON article APIs, SQLite persistence, and `/health` endpoint.
-- pytest/Selenium tests, Docker packaging, and a Jenkins pipeline definition. Current-release Jenkins and Docker execution have not been verified.
+- pytest/Selenium tests, Docker packaging, and a Jenkins pipeline. Jenkins build #4 verified Maven-based Python syntax validation, tests, Docker staging deployment, and health checks for commit `928aebe`.
 
 ## 5. Technology Stack
 | Category | Selection | Status |
@@ -48,7 +48,7 @@ project-root/
 
 ## 7. Current Project Status
 
-**Current audit:** 24 backend tests and 9 Selenium tests passed (33 total). The Jenkins pipeline, Docker build/deployment, live application health, and current-release database persistence after restart remain unverified. Historical Jenkins and Docker results below are not evidence of a successful current-release run.
+**Latest release verification (2026-11-03):** Jenkins job `NewsFlow-Week15-Final`, build #4 on commit `928aebe`, succeeded. Maven validation passed; 24 backend tests and 9 Selenium tests passed; the Docker image deployed to isolated staging and passed health checks at `http://127.0.0.1:5016`. The Jenkins console log is in [Week 15 evidence](docs/evidence/week-15/jenkins-build-4-console.txt). Persistence after restarting this exact release container, screenshots, and final PR/merge remain pending.
 
 ## Week 4 – Git/GitHub Initialization
 
@@ -93,35 +93,35 @@ Status: Completed
 
 Status: Completed
 
-- Jenkins server and declarative pipeline were configured; current-release execution is not verified
+- Jenkins server and declarative pipeline were configured; the Week 15 Maven-enabled pipeline passed in build #4
 - Created declarative `Jenkinsfile` pipeline
 - Configured Jenkins job to pull from GitHub `development` branch
 - Automated Python virtual environment creation and dependency installation
-- Historical pipeline documentation records test execution; the current release has not been run in Jenkins
+- Maven validates Python syntax from `pom.xml` before pytest; Maven does not compile the Flask application
 - [Week 7 documentation](docs/week-07/week-07-summary.md)
 
 ## Weeks 8–10 – Deployment Checks and Selenium Testing
 
-- **Week 8:** Deployment scripts and health-check workflow are documented. Current Jenkins/deployment execution is unverified. [Week 8 summary](docs/week-08/week-08-summary.md)
+- **Week 8:** Deployment scripts and health checks ran successfully in Jenkins build #4 against isolated staging. [Week 8 summary](docs/week-08/week-08-summary.md)
 - **Week 9:** Selenium end-to-end tests are implemented; all 9 passed in the current local audit. [Week 9 summary](docs/week-09/week-09-summary.md)
-- **Week 10:** Selenium is included in the Jenkins pipeline definition, but the current pipeline was not run. The Selenium fixture starts an isolated test server, so this does not verify tests against a deployed container. [Week 10 summary](docs/week-10/week-10-summary.md)
+- **Week 10:** Jenkins build #4 ran all 9 Selenium tests against the fixture's isolated temporary server; deployment was checked separately by the health-check stage. Selenium was not pointed at the deployed container. [Week 10 summary](docs/week-10/week-10-summary.md)
 
 ## Week 11 – Docker Image and Container Lifecycle
 
-Status: Docker packaging and deployment scripts are implemented. Current-release image/container verification is pending because the Docker engine was unavailable during the audit.
+Status: Docker image build, isolated container deployment, and health check passed in Jenkins build #4. The running staging container uses port 5016 and volume `newsflow-week15-staging-data`.
 
 - Dockerfile, container lifecycle, health check, and SQLite volume instructions: [Week 11 documentation](docs/week-11/week-11-summary.md)
-- Historical named-volume deployment and health-check records are available in the [Week 12 documentation](docs/week-12/week-12-summary.md); current-release database persistence after restart is not verified.
+- Current pipeline/deployment evidence is in [Week 15 build logs](docs/evidence/week-15/jenkins-build-4-console.txt); persistence after restarting this exact release container remains unverified.
 
 ## Weeks 12–15 – Deployment, Monitoring, and Final Validation
 
-- [Week 12: Jenkins and Docker deployment](docs/week-12/week-12-summary.md) — historical pipeline and deployment records; the current release pipeline and deployment remain unverified.
+- [Week 12: Jenkins and Docker deployment](docs/week-12/week-12-summary.md) — historical integration records; current deployment verification is recorded under Week 15.
 - [Week 13: Deployment monitoring](docs/week-13/week-13-summary.md) — historical application, container, health, and evidence checks.
 - [Week 14: Release readiness](docs/week-14/release-readiness.md) — dated validation records, not current-release verification.
 - [Week 14 integration evidence](docs/evidence/week-14/current-redesign-verification.md) — records historical tests, deployment, and Jenkins evidence for earlier source revisions.
 - [Reader and Publisher setup and workflow](docs/newsflow-accounts.md).
 - [NewsFlow UI and security notes](docs/newsflow-ui-redesign.md).
-- **Week 15:** Current local tests passed (24 backend, 9 Selenium; 33 total); current Jenkins/Docker execution, restart persistence, final PR, and screenshots remain pending. [Week 15 summary](docs/week-15/week-15-summary.md)
+- **Week 15:** Maven validation, 24 backend tests, 9 Selenium tests, Docker staging, and health checks passed in Jenkins build #4. Restart persistence for this release, final PR/merge, and screenshots remain pending. [Week 15 summary](docs/week-15/week-15-summary.md)
 
 ## 8. How to Run Locally
 1. Ensure Python 3.x is installed.
@@ -147,7 +147,7 @@ Run the pytest test suite:
 ```bash
 python -m pytest -v
 ```
-Latest local audit: **24 backend tests passed, 9 Selenium tests passed (33 total)**. Jenkins and Docker were not verified for the current release; the local SQLite database passed a read-only integrity check, but persistence after a current-release restart was not tested.
+Latest local audit: **24 backend tests passed, 9 Selenium tests passed (33 total)**. Jenkins build #4 also passed the Maven validation, both test suites, Docker deployment, and health checks. Persistence after restarting this exact release container has not been checked.
 
 ## 10. Git Branching Strategy
 We follow a structured branching model:
@@ -162,14 +162,14 @@ Features are merged into `development` via Pull Requests.
 - **Week 5:** Article Submission with Validation ✅
 - **Week 6:** MVP Completion (Dashboard, Approval, Rejection, Status Tracking) ✅
 - **Week 7:** Jenkins CI and Pipeline as Code ✅
-- **Week 8:** Deployment scripts and health-check workflow documented; current pipeline/deployment run unverified ⏳
+- **Week 8:** Deployment scripts and health checks verified in Jenkins build #4 ✅
 - **Week 9:** Selenium end-to-end testing ✅ (9 tests passed locally)
-- **Week 10:** Selenium-Jenkins integration is configured; current Jenkins execution and deployed-container test target unverified ⏳
-- **Week 11:** Docker image and container lifecycle implemented; current Docker engine/build/deployment unverified ⏳
-- **Week 12:** Jenkins-Docker deployment documented and historically exercised; current-release pipeline, deployment, and restart persistence unverified ⏳
+- **Week 10:** Jenkins ran the isolated Selenium suite (9 passed); a separate health check verified staging ✅
+- **Week 11:** Docker image build, isolated staging deployment, and health check verified in Jenkins build #4 ✅
+- **Week 12:** Jenkins-Docker pipeline and staging deployment verified; restart persistence for this release remains pending ⏳
 - **Week 13:** Deployment monitoring and evidence documentation ✅
 - **Week 14:** Release-readiness documentation and NewsFlow integration on `feature/newsflow-ui-redesign` ✅; development merge, redesign Jenkins run, and screenshots remain pending
-- **Week 15:** Final documentation and local tests completed (24 backend + 9 Selenium; 33 total); Jenkins/Docker release verification, current-release database restart persistence, screenshots, and final PR remain pending ⏳
+- **Week 15:** Maven-enabled Jenkins build #4 passed (24 backend + 9 Selenium; 33 total), Docker staging, and health checks; current-release restart persistence, screenshots, and final PR/merge remain pending ⏳
 
 ## 12. Documentation Links
 - [Week 1: Problem Definition & Scope](docs/week-01/week-01-summary.md)
@@ -193,4 +193,4 @@ Features are merged into `development` via Pull Requests.
 - [Evidence Checklists](docs/evidence/)
 
 ## 13. Future DevOps Components
-Ansible/Puppet provisioning remains outside the implemented project scope. Jenkins pipeline code, Docker packaging/deployment scripts, Selenium testing, and the Gunicorn-based Docker runtime are present; their current-release Jenkins and Docker execution remains unverified. See the linked Week 12–15 records for historical results and current verification limits.
+Ansible/Puppet provisioning remains outside the implemented project scope. The Maven-enabled Jenkins pipeline, Docker staging deployment, Selenium testing, and Gunicorn-based Docker runtime were verified in build #4; database restart persistence for this exact release, screenshots, and final PR/merge remain outstanding. See the linked Week 12–15 records for evidence and remaining limits.

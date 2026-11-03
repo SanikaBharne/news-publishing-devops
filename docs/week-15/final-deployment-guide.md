@@ -79,17 +79,17 @@ docker logs --tail 50 news-publishing-container
 .\.venv\Scripts\python.exe scripts\healthcheck.py 127.0.0.1 5001 3
 ```
 
-Expected: running/healthy, the existing volume mounted at `/data`, no critical runtime errors in the log tail, and an HTTP 200 `/health` response with `"status":"ok"`. Check article persistence across a planned replacement only in an authorized deployment window, and verify against a known non-sensitive test record. Week 15 did not build or deploy because Docker Engine was unavailable.
+Expected: running/healthy, the expected volume mounted at `/data`, no critical runtime errors in the log tail, and an HTTP 200 `/health` response with `"status":"ok"`. Check article persistence across a planned replacement only in an authorized deployment window, and verify against a known non-sensitive test record. Jenkins build #4 later built and deployed the current image to isolated staging successfully; persistence after restarting that exact deployed container remains unverified.
 
 ## Jenkins execution
 
-The root `Jenkinsfile` is Windows-agent-specific. Configure the Jenkins Pipeline job SCM to use the intended repository and branch, confirm that the service account can run Python and access the Docker Linux engine, then start a build and retain its build number and console output.
+The root `Jenkinsfile` is Windows-agent-specific. Configure the Jenkins Pipeline job SCM to use the intended repository and branch, confirm that the service account can run Python and access the Docker Linux engine, and configure the Jenkins Maven installation named `Maven-3.9.16`. The root `pom.xml` uses Maven's `validate` phase to run Python `compileall` on `src` and `scripts`; Maven validates Python syntax and does not compile the Flask application.
 
-Stages, in order, are Checkout, Check Python, Install Dependencies, Run Unit Tests, Build Docker Image, Deploy Docker Container, Health Check, Run Selenium Tests, and Final Verification. Selenium runs against the deployed URL on port 5001.
+Stages, in order, are Checkout, Check Python, Install Dependencies, Maven Validation, Run Unit Tests, Build Docker Image, Deploy Docker Container, Health Check, Run Selenium Tests, and Final Verification. Selenium uses its isolated temporary application; the separate health-check stages verify the deployed staging URL.
 
-The pipeline uses fixed deployment names (`news-publishing-container` and `news-publishing-data`) and can replace the existing container. Do not use a Jenkins run as a harmless CI-only test against a live deployment. First configure an approved isolated deployment target or obtain approval and a verified data backup. Do not trigger the historical Week 12 job expecting it to validate a different branch without confirming its SCM branch and target.
+The Week 15 pipeline uses the isolated staging container `newsflow-week15-staging`, volume `newsflow-week15-staging-data`, and host port `5016`; it must not be changed to reuse the existing application container or database volume for validation. The historical Week 12 job has a different SCM branch and deployment target, so confirm its configuration before triggering it.
 
-Jenkins URL, when running locally: `http://127.0.0.1:8080/`. The Week 15 check could not reach that service; no Week 15 pipeline result is available.
+Jenkins URL, when running locally: `http://127.0.0.1:8080/`. The Maven-enabled Week 15 job `NewsFlow-Week15-Final` passed build #4 on commit `928aebe`. Its console log is saved at `docs/evidence/week-15/jenkins-build-4-console.txt`.
 
 ## Troubleshooting
 
